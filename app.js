@@ -46,7 +46,7 @@ search.oninput=render; filter.onchange=render;
 document.querySelector("#navListings").onclick=()=>grid.scrollIntoView({behavior:"smooth"});
 document.querySelector("[data-scroll=top]").onclick=()=>scrollTo({top:0,behavior:"smooth"});
 document.querySelector("#openSellForm").onclick=()=>sellDialog.showModal();
-document.querySelector("#openAdmin").onclick=()=>{const sifre=prompt("Yönetici PIN kodunu girin:");if(sifre==="081008"){adminDialog.showModal();}else if(sifre!==null){alert("Hatalı PIN!");}};
+document.querySelector("#openAdmin").onclick=()=>{const sifre=prompt("Yönetici şifresini girin:");if(sifre==="081008"){adminDialog.showModal();}else if(sifre!==null){alert("Hatalı şifre!");}};
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>document.querySelector("#"+b.dataset.close).close());
 
 document.querySelector("#sellForm").onsubmit=e=>{

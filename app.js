@@ -63,3 +63,4 @@ window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPro
 installBtn.onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.classList.add("hidden")}
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 render();
+document.querySelector("#openAdmin").onclick=()=>{const sifre=prompt("Yönetici şifresini girin:");if(sifre==="081008"){adminDialog.showModal();}else if(sifre!==null){alert("Hatalı şifre!");}};

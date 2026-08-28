@@ -1,0 +1,16 @@
+{
+  "name": "Uzman Gayrimenkul",
+  "short_name": "Uzman GYM",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0e0e0e",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

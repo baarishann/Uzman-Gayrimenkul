@@ -39,8 +39,53 @@ function showDetail(id){
 }
 function renderAdmin(){
   const el=document.querySelector("#adminList");
-  el.innerHTML=listings.map(l=>`<div class="adminItem"><div><b>${l.title}</b><div class="muted">${l.location} • ${l.price}</div></div><button class="danger" data-del="${l.id}">Sil</button></div>`).join("");
-  el.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{listings=listings.filter(x=>x.id!==Number(b.dataset.del));setData(listings);render()})
+
+  el.innerHTML=listings.map(l=>`
+    <div class="adminItem">
+      <div>
+        <b>${l.title}</b>
+        <div class="muted">${l.location} • ${l.price}</div>
+      </div>
+      <div>
+        <button data-edit="${l.id}">✏️ Düzenle</button>
+        <button class="danger" data-del="${l.id}">🗑️ Sil</button>
+      </div>
+    </div>
+  `).join("");
+
+  el.querySelectorAll("[data-del]").forEach(b=>{
+    b.onclick=()=>{
+      if(confirm("Bu ilan silinsin mi?")){
+        listings=listings.filter(x=>x.id!==Number(b.dataset.del));
+        setData(listings);
+        render();
+      }
+    };
+  });
+
+  el.querySelectorAll("[data-edit]").forEach(b=>{
+    b.onclick=()=>{
+      const l=listings.find(x=>x.id===Number(b.dataset.edit));
+      if(!l)return;
+
+      const yeniBaslik=prompt("İlan başlığı:",l.title);
+      if(yeniBaslik===null)return;
+
+      const yeniFiyat=prompt("Fiyat:",l.price);
+      if(yeniFiyat===null)return;
+
+      const yeniKonum=prompt("Konum:",l.location);
+      if(yeniKonum===null)return;
+
+      l.title=yeniBaslik;
+      l.price=yeniFiyat;
+      l.location=yeniKonum;
+
+      setData(listings);
+      render();
+    };
+  });
+    }
 }
 search.oninput=render; filter.onchange=render;
 document.querySelector("#navListings").onclick=()=>grid.scrollIntoView({behavior:"smooth"});

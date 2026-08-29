@@ -128,10 +128,31 @@ document.querySelector("#sellForm").onsubmit=e=>{
   const msg=`Merhaba, gayrimenkulümü değerlendirmek istiyorum.%0A%0AAd Soyad: ${encodeURIComponent(d.name)}%0ATelefon: ${encodeURIComponent(d.phone)}%0ATür: ${encodeURIComponent(d.type)}%0AKonum: ${encodeURIComponent(d.location)}%0ABilgi: ${encodeURIComponent(d.note||"-")}`;
   window.open("https://wa.me/905061347675?text="+msg,"_blank");
 }
-document.querySelector("#adminForm").onsubmit=e=>{
-  e.preventDefault(); const d=Object.fromEntries(new FormData(e.target));
-  listings.unshift({id:Date.now(),...d}); setData(listings); e.target.reset(); render();
-}
+} document.querySelector("#adminForm").onsubmit=e=>{
+  e.preventDefault();
+
+  const d=Object.fromEntries(new FormData(e.target));
+
+  listings.unshift({
+    id:Date.now(),
+    title:d.title,
+    type:d.type,
+    status:d.status||"Aktif",
+    location:d.location,
+    price:d.price,
+    m2:d.m2,
+    ada:d.ada,
+    parsel:d.parsel,
+    image:d.image,
+    description:d.description
+  });
+
+  setData(listings);
+  e.target.reset();
+  render();
+
+  alert("İlan başarıyla eklendi.");
+};
 let deferredPrompt;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;installBtn.classList.remove("hidden")});
 installBtn.onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.classList.add("hidden")}

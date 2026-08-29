@@ -89,22 +89,51 @@
   </dialog>
 
   <dialog id="adminDialog">
-    <button class="closeBtn" data-close="adminDialog">×</button>
-    <h3>İlan Yönetimi</h3>
-    <p class="muted">Bu ilk sürümde eklediğiniz ilanlar yalnızca bu cihazda saklanır.</p>
-    <form id="adminForm" class="form">
-      <input name="title" required placeholder="İlan başlığı" />
-      <select name="type"><option>Arsa</option><option>Daire</option><option>Kiralık</option><option>Kat Karşılığı</option></select>
-      <input name="location" required placeholder="Mahalle / Konum" />
-      <input name="price" required placeholder="Fiyat (örn. 11.500.000 TL)" />
-      <input name="m2" placeholder="m²" />
-      <input name="ada" placeholder="Ada" />
-      <input name="parsel" placeholder="Parsel" />
-      <input name="image" placeholder="Fotoğraf URL'si (isteğe bağlı)" />
-      <textarea name="description" rows="4" placeholder="İlan açıklaması"></textarea>
-      <button class="primary" type="submit">İlanı Ekle</button>
-    </form>
-    <div id="adminList" class="adminList"></div>
+  <button class="closeBtn" data-close="adminDialog">×</button>
+  <h3>İlan Yönetimi</h3>
+  <p class="muted">Yeni portföy ekleyebilir, düzenleyebilir veya silebilirsiniz.</p>
+
+  <form id="adminForm" class="form">
+
+    <input name="title" required placeholder="İlan başlığı">
+
+    <select name="type" required>
+      <option value="Arsa">Arsa</option>
+      <option value="Daire">Daire</option>
+      <option value="Villa">Villa</option>
+      <option value="İşyeri">İşyeri</option>
+      <option value="Kiralık">Kiralık</option>
+      <option value="Kat Karşılığı">Kat Karşılığı</option>
+    </select>
+
+    <select name="status">
+      <option value="Aktif">🟢 Aktif</option>
+      <option value="Satıldı">🔴 Satıldı</option>
+      <option value="Kiralandı">🟡 Kiralandı</option>
+    </select>
+
+    <input name="location" required placeholder="Mahalle / Konum">
+
+    <input name="price" required placeholder="Fiyat (örn. 11.500.000 TL)">
+
+    <input name="m2" placeholder="Toplam m²">
+
+    <input name="ada" placeholder="Ada">
+
+    <input name="parsel" placeholder="Parsel">
+
+    <input name="image" placeholder="Fotoğraf bağlantısı">
+
+    <textarea name="description" rows="5" placeholder="İlan açıklaması"></textarea>
+
+    <button class="primary" type="submit">＋ İlanı Ekle</button>
+
+  </form>
+
+  <hr>
+
+  <h3>Mevcut İlanlar</h3>
+  <div id="adminList" class="adminList"></div>
   </dialog>
 <div id="adminLogin" class="admin-login">
   <div class="admin-login-box">
@@ -115,6 +144,6 @@
     <p id="adminError"></p>
   </div>
 </div>
-  <script src="app.js?v=10"></script>
+  <script <script src="app.js?v=11"></script>
 </body>
 </html>

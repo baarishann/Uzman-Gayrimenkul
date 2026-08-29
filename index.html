@@ -1,13 +1,64 @@
-<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0a0a0a"><title>Uzman Gayrimenkul | Çorlu</title><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="style.css?v=20"></head><body>
-<header class="top"><div><div class="brand">UZMAN <span>GAYRİMENKUL</span></div><small>Çorlu • Güvenilir Portföy Danışmanlığı</small></div><button id="installBtn" class="outline hidden">Uygulamayı Yükle</button></header>
-<main><section class="hero"><span class="eyebrow">UZMAN GAYRİMENKUL</span><h1>Doğru yatırım,<br><em>doğru portföy.</em></h1><p>Arsa, konut, ticari gayrimenkul ve kat karşılığı fırsatlarını tek yerde keşfedin.</p><div class="heroBtns"><a href="tel:+905061347675" class="primary">📞 Hemen Ara</a><a href="https://wa.me/905061347675" class="secondary">💬 WhatsApp</a></div></section>
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080808">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Uzman Gayrimenkul">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Uzman Gayrimenkul Çorlu - profesyonel gayrimenkul portföyü">
+<title>Uzman Gayrimenkul | Çorlu</title>
+<link rel="manifest" href="manifest.json?v=30">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css?v=30">
+</head>
+<body>
+<header class="top"><div class="brandWrap"><img src="icon-192.png" class="logo"><div><b>UZMAN <span>GAYRİMENKUL</span></b><small>Çorlu • Profesyonel Gayrimenkul Danışmanlığı</small></div></div><button id="installBtn" class="outline hidden">Uygulamayı Yükle</button></header>
+<main>
+<section class="hero"><span class="eyebrow">UZMAN GAYRİMENKUL</span><h1>Doğru yatırım.<br><em>Doğru portföy.</em></h1><p>Arsa, konut ve ticari gayrimenkulleri detaylı filtrelerle keşfedin.</p><div class="heroBtns"><a class="primary" href="tel:+905061347675">📞 Hemen Ara</a><a class="secondary" href="https://wa.me/905061347675">💬 WhatsApp</a></div></section>
 <section class="stats"><div><b id="listingCount">0</b><span>Aktif Portföy</span></div><div><b>7/24</b><span>İletişim</span></div><div><b>Çorlu</b><span>Uzman Bölge</span></div></section>
-<section class="toolbar"><input id="searchInput" placeholder="İlan, mahalle, ada veya parsel ara..."><select id="typeFilter"><option value="">Tüm İlanlar</option><option>Arsa</option><option>Daire</option><option>Villa</option><option>İşyeri</option><option>Kiralık</option><option>Kat Karşılığı</option></select></section>
+<section class="toolbar"><input id="searchInput" placeholder="Mahalle, ilan, ada veya parsel ara..."><select id="typeFilter"><option value="">Tüm Türler</option><option>Arsa</option><option>Daire</option><option>Villa</option><option>Müstakil Ev</option><option>İşyeri</option><option>Dükkan</option><option>Ofis</option><option>Depo</option></select><select id="dealFilter"><option value="">Tüm İşlemler</option><option>Satılık</option><option>Kiralık</option><option>Kat Karşılığı</option></select></section>
 <section class="quick"><a href="tel:+905061347675">📞<span>Ara</span></a><a href="https://wa.me/905061347675">💬<span>WhatsApp</span></a><button id="openSellForm">🏠<span>Gayrimenkul Gönder</span></button><button id="openAdmin">⚙️<span>Yönetim</span></button></section>
-<div class="sectionTitle"><div><span class="eyebrow">GÜNCEL PORTFÖY</span><h2>İlanlar</h2></div><span id="resultText"></span></div><section id="listingGrid" class="grid"></section><div id="emptyState" class="empty hidden">Aramanıza uygun ilan bulunamadı.</div></main>
+<div class="sectionTitle"><div><span class="eyebrow">GÜNCEL PORTFÖY</span><h2>İlanlar</h2></div><span id="resultText"></span></div>
+<section id="listingGrid" class="grid"></section><div id="emptyState" class="empty hidden">Aramanıza uygun ilan bulunamadı.</div>
+</main>
 <nav class="bottom"><button id="homeBtn">⌂<span>Ana Sayfa</span></button><button id="navListings">▦<span>İlanlar</span></button><a href="https://wa.me/905061347675">✆<span>İletişim</span></a></nav>
+
 <dialog id="detailDialog"><button class="close" data-close="detailDialog">×</button><div id="detailContent"></div></dialog>
-<dialog id="sellDialog"><button class="close" data-close="sellDialog">×</button><h2>Gayrimenkulünü Gönder</h2><p class="muted">Bilgileri doldurun, WhatsApp üzerinden bize ulaşsın.</p><form id="sellForm" class="form"><input name="name" required placeholder="Ad Soyad"><input name="phone" required placeholder="Telefon"><select name="type"><option>Arsa</option><option>Daire</option><option>Villa</option><option>İşyeri</option><option>Diğer</option></select><input name="location" required placeholder="Mahalle / Konum"><textarea name="note" rows="4" placeholder="m², ada/parsel ve diğer bilgiler"></textarea><button class="primary" type="submit">WhatsApp ile Gönder</button></form></dialog>
-<dialog id="adminDialog" class="adminDialog"><button class="close" data-close="adminDialog">×</button><h2>Portföy Yönetimi</h2><p class="muted">İlan ekleyin, düzenleyin, durumunu değiştirin veya silin.</p><form id="adminForm" class="form"><input type="hidden" name="editId"><input name="title" required placeholder="İlan başlığı"><div class="two"><select name="type"><option>Arsa</option><option>Daire</option><option>Villa</option><option>İşyeri</option><option>Kiralık</option><option>Kat Karşılığı</option></select><select name="status"><option>Aktif</option><option>Satıldı</option><option>Kiralandı</option></select></div><input name="location" required placeholder="Mahalle / Konum"><input name="price" required placeholder="Fiyat (örn. 11.500.000 TL)"><div class="three"><input name="m2" placeholder="m²"><input name="ada" placeholder="Ada"><input name="parsel" placeholder="Parsel"></div><input name="image" placeholder="Kapak fotoğrafı URL'si (isteğe bağlı)"><textarea name="description" rows="5" placeholder="İlan açıklaması"></textarea><button id="saveListing" class="primary" type="submit">＋ İlanı Kaydet</button><button id="cancelEdit" class="secondary hidden" type="button">Düzenlemeyi İptal Et</button></form><h3>Mevcut İlanlar</h3><div id="adminList" class="adminList"></div></dialog>
-<div id="adminLogin" class="login"><div class="loginBox"><div class="lock">🔐</div><h2>Yönetici Girişi</h2><p>Portföy yönetimine erişmek için şifrenizi girin.</p><input id="adminPassword" type="password" inputmode="numeric" placeholder="Yönetici şifresi"><button id="adminLoginBtn" class="primary">Giriş Yap</button><button id="adminCancelBtn" class="secondary">İptal</button><p id="adminError" class="error"></p></div></div>
-<script src="app.js?v=20"></script></body></html>
+<dialog id="sellDialog"><button class="close" data-close="sellDialog">×</button><h2>Gayrimenkulünü Gönder</h2><form id="sellForm" class="form"><input name="name" required placeholder="Ad Soyad"><input name="phone" required placeholder="Telefon"><select name="type"><option>Arsa</option><option>Daire</option><option>Villa</option><option>İşyeri</option><option>Diğer</option></select><input name="location" required placeholder="Mahalle / Konum"><textarea name="note" rows="5" placeholder="Gayrimenkul hakkında bilgi"></textarea><button class="primary">WhatsApp ile Gönder</button></form></dialog>
+
+<dialog id="adminDialog" class="adminDialog"><button class="close" data-close="adminDialog">×</button><h2>Portföy Yönetimi</h2><p class="muted">İlan türünü seçtiğinizde gerekli detay alanları otomatik açılır.</p>
+<form id="adminForm" class="form">
+<input type="hidden" name="editId">
+<label>İlan Başlığı<input name="title" required placeholder="Örn. Önerler'de Satılık Villa"></label>
+<div class="two"><label>İlan Türü<select name="type" id="adminType"><option>Arsa</option><option>Daire</option><option>Villa</option><option>Müstakil Ev</option><option>İşyeri</option><option>Dükkan</option><option>Ofis</option><option>Depo</option></select></label><label>İşlem<select name="deal"><option>Satılık</option><option>Kiralık</option><option>Kat Karşılığı</option></select></label></div>
+<div class="two"><label>Durum<select name="status"><option>Aktif</option><option>Satıldı</option><option>Kiralandı</option><option>Pasif</option></select></label><label>Fiyat<input name="price" required placeholder="11.500.000 TL"></label></div>
+<label>Konum<input name="location" required placeholder="Çorlu / Mahalle"></label>
+<div class="two"><label>Brüt / Toplam m²<input name="m2" inputmode="decimal" placeholder="120"></label><label>Net m²<input name="netM2" inputmode="decimal" placeholder="105"></label></div>
+
+<div id="landFields" class="dynamicFields">
+<h3>Arsa / Arazi Detayları</h3><div class="two"><label>Ada<input name="ada"></label><label>Parsel<input name="parsel"></label></div>
+<div class="two"><label>İmar Durumu<input name="zoning" placeholder="Konut / Ticari..."></label><label>Emsal<input name="emsal" placeholder="0.40"></label></div>
+<div class="two"><label>Tapu Durumu<input name="deed" placeholder="Müstakil / Hisseli"></label><label>Yola Cephe<input name="frontage" placeholder="Örn. 25 m"></label></div>
+</div>
+
+<div id="buildingFields" class="dynamicFields hidden">
+<h3>Konut / Ticari Detayları</h3>
+<div class="three"><label>Oda Sayısı<input name="rooms" placeholder="3+1"></label><label>Bulunduğu Kat<input name="floor" placeholder="3"></label><label>Kat Sayısı<input name="floors" placeholder="5"></label></div>
+<div class="three"><label>Bina Yaşı<input name="age" placeholder="0"></label><label>Banyo<input name="bathrooms" placeholder="2"></label><label>Isıtma<input name="heating" placeholder="Doğalgaz Kombi"></label></div>
+<div class="checks"><label><input type="checkbox" name="balcony"> Balkon</label><label><input type="checkbox" name="elevator"> Asansör</label><label><input type="checkbox" name="parking"> Otopark</label><label><input type="checkbox" name="ensuite"> Ebeveyn Banyosu</label><label><input type="checkbox" name="iskan"> İskanlı</label><label><input type="checkbox" name="credit"> Krediye Uygun</label><label><input type="checkbox" name="furnished"> Eşyalı</label><label><input type="checkbox" name="garden"> Bahçe</label></div>
+</div>
+
+<label>Fotoğraflar <small>Galeriden birden fazla seçebilirsiniz (en fazla 10)</small><input id="photoInput" type="file" accept="image/*" multiple></label>
+<div id="photoPreview" class="photoPreview"></div>
+<textarea name="description" rows="6" placeholder="İlan açıklaması, ulaşım, çevre, avantajlar ve diğer detaylar..."></textarea>
+<button id="saveListing" class="primary" type="submit">＋ İlanı Kaydet</button><button id="cancelEdit" class="secondary hidden" type="button">Düzenlemeyi İptal Et</button>
+</form><h3>Mevcut İlanlar</h3><div id="adminList" class="adminList"></div></dialog>
+
+<div id="adminLogin" class="login"><div class="loginBox"><img src="icon-192.png" class="loginLogo"><h2>Yönetici Girişi</h2><p>Portföy yönetimine erişmek için şifrenizi girin.</p><input id="adminPassword" type="password" inputmode="numeric" placeholder="Yönetici şifresi"><button id="adminLoginBtn" class="primary">Giriş Yap</button><button id="adminCancelBtn" class="secondary">İptal</button><p id="adminError" class="error"></p></div></div>
+
+<script src="app.js?v=30"></script>
+</body></html>

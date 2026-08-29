@@ -1,1 +1,25 @@
-{"name":"Uzman Gayrimenkul","short_name":"Uzman","start_url":"./","display":"standalone","background_color":"#080808","theme_color":"#080808","description":"Uzman Gayrimenkul portföy uygulaması"}
+{
+  "name": "Uzman Gayrimenkul",
+  "short_name": "Uzman G.",
+  "description": "Uzman Gayrimenkul Çorlu portföy uygulaması",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#080808",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

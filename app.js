@@ -46,7 +46,36 @@ search.oninput=render; filter.onchange=render;
 document.querySelector("#navListings").onclick=()=>grid.scrollIntoView({behavior:"smooth"});
 document.querySelector("[data-scroll=top]").onclick=()=>scrollTo({top:0,behavior:"smooth"});
 document.querySelector("#openSellForm").onclick=()=>sellDialog.showModal();
-document.querySelector("#openAdmin").onclick=()=>{const sifre=prompt("Yönetici şifresini girin:");if(sifre==="081008"){adminDialog.showModal();}else if(sifre!==null){alert("Hatalı şifre!");}};
+const adminLogin=document.querySelector("#adminLogin");
+const adminPassword=document.querySelector("#adminPassword");
+const adminError=document.querySelector("#adminError");
+
+document.querySelector("#openAdmin").onclick=()=>{
+  adminPassword.value="";
+  adminError.textContent="";
+  adminLogin.classList.add("show");
+  adminPassword.focus();
+};
+
+document.querySelector("#adminLoginBtn").onclick=()=>{
+  if(adminPassword.value==="081008"){
+    adminLogin.classList.remove("show");
+    adminDialog.showModal();
+  }else{
+    adminError.textContent="Şifre hatalı!";
+    adminPassword.value="";
+  }
+};
+
+document.querySelector("#adminCancelBtn").onclick=()=>{
+  adminLogin.classList.remove("show");
+};
+
+adminPassword.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    document.querySelector("#adminLoginBtn").click();
+  }
+});
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>document.querySelector("#"+b.dataset.close).close());
 
 document.querySelector("#sellForm").onsubmit=e=>{

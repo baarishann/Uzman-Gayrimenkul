@@ -159,7 +159,7 @@ async function hydrateAccount(){
   state.profile=null;
   if(state.user){ const {data}=await supabase.from('profiles').select('*').eq('id',state.user.id).maybeSingle(); state.profile=data||null; }
   updateAuthUI();
-  if(state.user){ fillProfile(); await Promise.all([loadMyListings(),loadNotifications()]); if(isStaff()) await loadAdmin('pending'); }
+  if(state.user){ fillProfile(); if(state.profile?.role==='owner') await claimInitialListings(); await Promise.all([loadMyListings(),loadNotifications()]); if(isStaff()) await loadAdmin('pending'); }
 }
 function updateAuthUI(){
   $('#authBtn').classList.toggle('hidden',!!state.user); $('#userBtn').classList.toggle('hidden',!state.user);
@@ -169,10 +169,20 @@ function updateAuthUI(){
 function fillProfile(){ $('#profileName').value=state.profile?.full_name||''; $('#profilePhone').value=state.profile?.phone||''; $('#profileCompany').value=state.profile?.company_name||''; $('#profileBio').value=state.profile?.bio||''; }
 
 function openAuth(tab='login'){ $$('.auth-tabs button').forEach(x=>x.classList.toggle('active',x.dataset.authTab===tab)); $('#loginForm').classList.toggle('hidden',tab!=='login'); $('#signupForm').classList.toggle('hidden',tab!=='signup'); $('#authDialog').showModal(); }
-async function login(e){ e.preventDefault(); const email=$('#loginEmail').value.trim(), password=$('#loginPassword').value; const {error}=await supabase.auth.signInWithPassword({email,password}); if(error)return toast(error.message,'err'); $('#authDialog').close(); toast('Giriş yapıldı.'); }
-async function signup(e){ e.preventDefault(); const email=$('#signupEmail').value.trim(), password=$('#signupPassword').value, full_name=$('#signupName').value.trim(), phone=$('#signupPhone').value.trim(); const emailRedirectTo='https://baarishann.github.io/Uzman-Gayrimenkul/'; const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo,data:{full_name,phone}}}); if(error)return toast(error.message,'err'); if(data.session){ $('#authDialog').close(); toast('Üyeliğiniz oluşturuldu.'); } else toast('Üyelik oluşturuldu. E-postanızı doğrulayın.'); }
+async function login(e){ e.preventDefault(); const email=$('#loginEmail').value.trim(), password=$('#loginPassword').value; const {error}=await supabase.auth.signInWithPassword({email,password}); if(error)return toast(error.message,'err'); if($('#authDialog').open) $('#authDialog').close(); e.target.reset(); toast('Giriş yapıldı.'); }
+async function signup(e){ e.preventDefault(); const email=$('#signupEmail').value.trim(), password=$('#signupPassword').value, full_name=$('#signupName').value.trim(), phone=$('#signupPhone').value.trim(); const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name,phone}}}); if(error)return toast(error.message,'err'); if(!data.session){ const signed=await supabase.auth.signInWithPassword({email,password}); if(signed.error)return toast('Üyelik oluşturuldu. Şimdi giriş yapabilirsiniz.'); } if($('#authDialog').open) $('#authDialog').close(); e.target.reset(); toast('Üyeliğiniz başarıyla oluşturuldu. Giriş yapıldı.'); }
 async function logout(){ await supabase.auth.signOut(); nav('home'); toast('Çıkış yapıldı.'); }
 async function saveProfile(e){ e.preventDefault(); if(!state.user)return; const payload={full_name:$('#profileName').value.trim(),phone:$('#profilePhone').value.trim(),company_name:$('#profileCompany').value.trim(),bio:$('#profileBio').value.trim()}; const {data,error}=await supabase.from('profiles').update(payload).eq('id',state.user.id).select().single(); if(error)return toast(error.message,'err'); state.profile=data; updateAuthUI(); toast('Profil güncellendi.'); }
+
+
+async function claimInitialListings(){
+  if(!state.user || state.profile?.role!=='owner') return;
+  const {error}=await supabase.from('listings')
+    .update({owner_id:state.user.id})
+    .is('owner_id',null)
+    .in('listing_no',[1,2,3,4,5,6,7,8]);
+  if(error) console.warn('İlk ilanlar hesaba bağlanamadı:',error.message);
+}
 
 async function loadMyListings(){
   if(!state.user)return; const {data,error}=await supabase.from('listings').select('*').eq('owner_id',state.user.id).order('created_at',{ascending:false}); if(error)return;
@@ -249,7 +259,7 @@ let deferredInstall=null;
 function bindUI(){
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hidden')});
   $('#installBtn').addEventListener('click',async()=>{if(deferredInstall){deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('#installBtn').classList.add('hidden')}});
-  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=41').catch(console.warn);
+  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=42').catch(console.warn);
   document.addEventListener('click',async e=>{
     const close=e.target.closest('[data-close]'); if(close){close.closest('dialog').close();return;}
     const navBtn=e.target.closest('[data-nav]'); if(navBtn){nav(navBtn.dataset.nav);return;}

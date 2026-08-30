@@ -1,7 +1,7 @@
 {
-  "name": "Uzman Gayrimenkul",
-  "short_name": "Uzman G.",
-  "description": "Uzman Gayrimenkul Çorlu portföy uygulaması",
+  "name": "Uzman Emlak",
+  "short_name": "Uzman Emlak",
+  "description": "Uzman Emlak Çorlu portföy uygulaması",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

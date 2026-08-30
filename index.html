@@ -1,64 +1,169 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080808">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Uzman Emlak">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="description" content="Uzman Emlak Çorlu - profesyonel gayrimenkul portföyü">
-<title>Uzman Emlak | Çorlu</title>
-<link rel="manifest" href="manifest.json?v=32">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="style.css?v=32">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0c" />
+  <meta name="description" content="Uzman Emlak - Çorlu ve çevresinde satılık, kiralık ve kat karşılığı gayrimenkuller." />
+  <link rel="manifest" href="manifest.json?v=40" />
+  <link rel="icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="stylesheet" href="style.css?v=40" />
+  <title>Uzman Emlak</title>
 </head>
 <body>
-<header class="top"><div class="brandWrap"><img src="icon-192.png" class="logo"><div><b>UZMAN <span>EMLAK</span></b><small>Çorlu • Profesyonel Gayrimenkul Danışmanlığı</small></div></div><button id="installBtn" class="outline hidden">Uygulamayı Yükle</button></header>
-<main>
-<section class="hero"><span class="eyebrow">UZMAN EMLAK</span><h1>Doğru yatırım.<br><em>Doğru portföy.</em></h1><p>Arsa, konut ve ticari gayrimenkulleri detaylı filtrelerle keşfedin.</p><div class="heroBtns"><a class="primary" href="tel:+905061347675">📞 Hemen Ara</a><a class="secondary" href="https://wa.me/905061347675">💬 WhatsApp</a></div></section>
-<section class="stats"><div><b id="listingCount">0</b><span>Aktif Portföy</span></div><div><b>7/24</b><span>İletişim</span></div><div><b>Çorlu</b><span>Uzman Bölge</span></div></section>
-<section class="toolbar"><input id="searchInput" placeholder="Mahalle, ilan, ada veya parsel ara..."><select id="typeFilter"><option value="">Tüm Türler</option><option>Arsa</option><option>Daire</option><option>Villa</option><option>Müstakil Ev</option><option>İşyeri</option><option>Dükkan</option><option>Ofis</option><option>Depo</option></select><select id="dealFilter"><option value="">Tüm İşlemler</option><option>Satılık</option><option>Kiralık</option><option>Kat Karşılığı</option></select></section>
-<section class="quick"><a href="tel:+905061347675">📞<span>Ara</span></a><a href="https://wa.me/905061347675">💬<span>WhatsApp</span></a><button id="openSellForm">🏠<span>Gayrimenkul Gönder</span></button><button id="openAdmin">⚙️<span>Yönetim</span></button></section>
-<div class="sectionTitle"><div><span class="eyebrow">GÜNCEL PORTFÖY</span><h2>İlanlar</h2></div><span id="resultText"></span></div>
-<section id="listingGrid" class="grid"></section><div id="emptyState" class="empty hidden">Aramanıza uygun ilan bulunamadı.</div>
-</main>
-<nav class="bottom"><button id="homeBtn">⌂<span>Ana Sayfa</span></button><button id="navListings">▦<span>İlanlar</span></button><a href="https://wa.me/905061347675">✆<span>İletişim</span></a></nav>
+  <div id="toastRoot" class="toast-root" aria-live="polite"></div>
 
-<dialog id="detailDialog"><button class="close" data-close="detailDialog">×</button><div id="detailContent"></div></dialog>
-<dialog id="sellDialog"><button class="close" data-close="sellDialog">×</button><h2>Gayrimenkulünü Gönder</h2><form id="sellForm" class="form"><input name="name" required placeholder="Ad Soyad"><input name="phone" required placeholder="Telefon"><select name="type"><option>Arsa</option><option>Daire</option><option>Villa</option><option>İşyeri</option><option>Diğer</option></select><input name="location" required placeholder="Mahalle / Konum"><textarea name="note" rows="5" placeholder="Gayrimenkul hakkında bilgi"></textarea><button class="primary">WhatsApp ile Gönder</button></form></dialog>
+  <header class="topbar">
+    <div class="brand" data-nav="home" role="button" tabindex="0">
+      <div class="brand-mark">UE</div>
+      <div><strong>UZMAN <span>EMLAK</span></strong><small>Gayrimenkul Platformu</small></div>
+    </div>
+    <div class="top-actions">
+      <button id="installBtn" class="ghost-btn hidden">Uygulamayı Yükle</button>
+      <button id="authBtn" class="gold-btn">Giriş Yap</button>
+      <button id="userBtn" class="avatar-btn hidden" aria-label="Hesabım">U</button>
+    </div>
+  </header>
 
-<dialog id="adminDialog" class="adminDialog"><button class="close" data-close="adminDialog">×</button><h2>Portföy Yönetimi</h2><p class="muted">İlan türünü seçtiğinizde gerekli detay alanları otomatik açılır.</p>
-<form id="adminForm" class="form">
-<input type="hidden" name="editId">
-<label>İlan Başlığı<input name="title" required placeholder="Örn. Önerler'de Satılık Villa"></label>
-<div class="two"><label>İlan Türü<select name="type" id="adminType"><option>Arsa</option><option>Daire</option><option>Villa</option><option>Müstakil Ev</option><option>İşyeri</option><option>Dükkan</option><option>Ofis</option><option>Depo</option></select></label><label>İşlem<select name="deal"><option>Satılık</option><option>Kiralık</option><option>Kat Karşılığı</option></select></label></div>
-<div class="two"><label>Durum<select name="status"><option>Aktif</option><option>Satıldı</option><option>Kiralandı</option><option>Pasif</option></select></label><label>Fiyat<input name="price" required placeholder="11.500.000 TL"></label></div>
-<label>Konum<input name="location" required placeholder="Çorlu / Mahalle"></label>
-<div class="two"><label>Brüt / Toplam m²<input name="m2" inputmode="decimal" placeholder="120"></label><label>Net m²<input name="netM2" inputmode="decimal" placeholder="105"></label></div>
+  <main id="app">
+    <section id="homeView" class="view active-view">
+      <section class="hero shell">
+        <div class="hero-copy">
+          <div class="eyebrow">TEKİRDAĞ • ÇORLU</div>
+          <h1>Aradığınız gayrimenkulü <span>tek yerde</span> bulun.</h1>
+          <p>Satılık, kiralık, arsa, işyeri ve kat karşılığı portföyleri gelişmiş filtrelerle inceleyin.</p>
+        </div>
+        <div class="hero-search">
+          <div class="search-tabs" id="dealTabs">
+            <button class="active" data-deal="all">Tümü</button>
+            <button data-deal="sale">Satılık</button>
+            <button data-deal="rent">Kiralık</button>
+            <button data-deal="land_share">Kat Karşılığı</button>
+          </div>
+          <div class="search-line">
+            <input id="searchInput" type="search" placeholder="Mahalle, ilan başlığı, ada/parsel..." />
+            <button id="searchBtn" class="gold-btn">Ara</button>
+          </div>
+          <div class="filter-row">
+            <select id="categoryFilter">
+              <option value="all">Tüm Kategoriler</option>
+              <option value="Konut">Konut</option>
+              <option value="Arsa">Arsa</option>
+              <option value="İşyeri">İşyeri</option>
+            </select>
+            <select id="neighborhoodFilter"><option value="all">Tüm Mahalleler</option></select>
+            <select id="sortFilter">
+              <option value="new">En Yeni</option>
+              <option value="priceAsc">Fiyat Artan</option>
+              <option value="priceDesc">Fiyat Azalan</option>
+              <option value="m2Desc">m² Büyükten Küçüğe</option>
+            </select>
+            <button id="advancedFilterBtn" class="ghost-btn">Detaylı Filtre</button>
+          </div>
+        </div>
+      </section>
 
-<div id="landFields" class="dynamicFields">
-<h3>Arsa / Arazi Detayları</h3><div class="two"><label>Ada<input name="ada"></label><label>Parsel<input name="parsel"></label></div>
-<div class="two"><label>İmar Durumu<input name="zoning" placeholder="Konut / Ticari..."></label><label>Emsal<input name="emsal" placeholder="0.40"></label></div><div class="two"><label>Hmax / Kat Yüksekliği<input name="hmax" placeholder="9.50 m"></label><label>Yola Cephe<input name="frontage" placeholder="Örn. 25 m"></label></div>
-<div class="two"><label>Tapu Durumu<input name="deed" placeholder="Müstakil / Hisseli"></label><label>Köşe Parsel / Not<input name="landNote" placeholder="Köşe parsel vb."></label></div>
-</div>
+      <section class="quick-cats shell" id="quickCats">
+        <button data-cat="Arsa"><span>⌂</span><b>Arsa</b><small>Yatırımlık parseller</small></button>
+        <button data-cat="Konut"><span>▦</span><b>Konut</b><small>Daire & villa</small></button>
+        <button data-cat="İşyeri"><span>▤</span><b>İşyeri</b><small>Dükkan & ofis</small></button>
+        <button data-deal-quick="land_share"><span>◇</span><b>Kat Karşılığı</b><small>Proje fırsatları</small></button>
+      </section>
 
-<div id="buildingFields" class="dynamicFields hidden">
-<h3>Konut / Ticari Detayları</h3>
-<div class="three"><label>Oda Sayısı<input name="rooms" placeholder="3+1"></label><label>Bulunduğu Kat<input name="floor" placeholder="3"></label><label>Kat Sayısı<input name="floors" placeholder="5"></label></div>
-<div class="three"><label>Bina Yaşı<input name="age" placeholder="0"></label><label>Banyo<input name="bathrooms" placeholder="2"></label><label>Isıtma<input name="heating" placeholder="Doğalgaz Kombi"></label></div>
-<div class="checks"><label><input type="checkbox" name="balcony"> Balkon</label><label><input type="checkbox" name="elevator"> Asansör</label><label><input type="checkbox" name="parking"> Otopark</label><label><input type="checkbox" name="ensuite"> Ebeveyn Banyosu</label><label><input type="checkbox" name="iskan"> İskanlı</label><label><input type="checkbox" name="credit"> Krediye Uygun</label><label><input type="checkbox" name="furnished"> Eşyalı</label><label><input type="checkbox" name="garden"> Bahçe</label></div>
-</div>
+      <section class="shell section-head">
+        <div><div class="eyebrow">GÜNCEL PORTFÖY</div><h2>Öne çıkan ilanlar</h2></div>
+        <button id="clearFiltersBtn" class="text-btn">Filtreleri temizle</button>
+      </section>
+      <section class="shell">
+        <div id="listingGrid" class="listing-grid"></div>
+        <div id="listingEmpty" class="empty-state hidden"><div>⌕</div><h3>İlan bulunamadı</h3><p>Filtreleri değiştirip tekrar deneyin.</p></div>
+        <div id="listingLoading" class="skeleton-grid"></div>
+      </section>
+    </section>
 
-<label>Fotoğraflar <small>Galeriden birden fazla seçebilirsiniz (en fazla 10)</small><input id="photoInput" type="file" accept="image/*" multiple></label>
-<div id="photoPreview" class="photoPreview"></div>
-<textarea name="description" rows="6" placeholder="İlan açıklaması, ulaşım, çevre, avantajlar ve diğer detaylar..."></textarea>
-<button id="saveListing" class="primary" type="submit">＋ İlanı Kaydet</button><button id="cancelEdit" class="secondary hidden" type="button">Düzenlemeyi İptal Et</button>
-</form><h3>Mevcut İlanlar</h3><div id="adminList" class="adminList"></div></dialog>
+    <section id="favoritesView" class="view shell">
+      <div class="page-title"><div><div class="eyebrow">HESABIM</div><h1>Favorilerim</h1></div></div>
+      <div id="favoritesGrid" class="listing-grid"></div>
+      <div id="favoritesEmpty" class="empty-state hidden"><div>♡</div><h3>Henüz favoriniz yok</h3><p>Beğendiğiniz ilanları kalp simgesiyle kaydedebilirsiniz.</p></div>
+    </section>
 
-<div id="adminLogin" class="login"><div class="loginBox"><img src="icon-192.png" class="loginLogo"><h2>Yönetici Girişi</h2><p>Portföy yönetimine erişmek için şifrenizi girin.</p><input id="adminPassword" type="password" inputmode="numeric" placeholder="Yönetici şifresi"><button id="adminLoginBtn" class="primary">Giriş Yap</button><button id="adminCancelBtn" class="secondary">İptal</button><p id="adminError" class="error"></p></div></div>
+    <section id="messagesView" class="view shell">
+      <div class="page-title"><div><div class="eyebrow">İLETİŞİM</div><h1>Mesajlarım</h1></div></div>
+      <div class="messages-layout">
+        <aside id="conversationList" class="conversation-list"></aside>
+        <section class="chat-panel">
+          <div id="chatEmpty" class="empty-state compact"><div>✉</div><h3>Bir konuşma seçin</h3><p>İlan sahibiyle uygulama içinden mesajlaşabilirsiniz.</p></div>
+          <div id="chatActive" class="hidden chat-active">
+            <div id="chatHeader" class="chat-header"></div>
+            <div id="messageList" class="message-list"></div>
+            <form id="messageForm" class="message-form"><textarea id="messageInput" maxlength="5000" rows="2" placeholder="Mesajınızı yazın..."></textarea><button class="gold-btn">Gönder</button></form>
+          </div>
+        </section>
+      </div>
+    </section>
 
-<script src="app.js?v=32"></script>
-</body></html>
+    <section id="accountView" class="view shell">
+      <div class="page-title"><div><div class="eyebrow">ÜYE PANELİ</div><h1>Hesabım</h1></div><button id="logoutBtn" class="danger-btn">Çıkış Yap</button></div>
+      <div class="account-grid">
+        <aside class="account-sidebar">
+          <button class="active" data-account-tab="profile">Profilim</button>
+          <button data-account-tab="listings">İlanlarım</button>
+          <button data-account-tab="notifications">Bildirimler <span id="notificationBadge" class="badge hidden">0</span></button>
+          <button id="adminTabBtn" data-account-tab="admin" class="hidden">Yönetim Paneli</button>
+        </aside>
+        <div class="account-content">
+          <section id="profileTab" class="account-tab active-account-tab">
+            <div class="panel-card"><h2>Profil Bilgileri</h2><form id="profileForm" class="form-grid"><label>Ad Soyad<input id="profileName" required /></label><label>Telefon<input id="profilePhone" inputmode="tel" /></label><label>Firma<input id="profileCompany" /></label><label class="full">Hakkımda<textarea id="profileBio" rows="4"></textarea></label><div class="full form-actions"><button class="gold-btn">Profili Kaydet</button></div></form></div>
+          </section>
+          <section id="listingsTab" class="account-tab">
+            <div class="tab-toolbar"><div><h2>İlanlarım</h2><p>İlanlarınız onaylandıktan sonra yayına alınır.</p></div><button id="newListingBtn2" class="gold-btn">+ Yeni İlan</button></div>
+            <div id="myListings" class="manage-list"></div>
+          </section>
+          <section id="notificationsTab" class="account-tab"><div class="tab-toolbar"><div><h2>Bildirimler</h2><p>İlan ve mesaj hareketleri.</p></div><button id="markAllReadBtn" class="ghost-btn">Tümünü okundu yap</button></div><div id="notificationList" class="notification-list"></div></section>
+          <section id="adminTab" class="account-tab">
+            <div class="admin-stats" id="adminStats"></div>
+            <div class="admin-tabs"><button class="active" data-admin-section="pending">Onay Bekleyen</button><button data-admin-section="all">Tüm İlanlar</button><button data-admin-section="users">Üyeler</button><button data-admin-section="reports">Şikayetler</button></div>
+            <div id="adminContent" class="manage-list"></div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button id="floatingAddBtn" class="floating-add">+ İlan Ver</button>
+
+  <nav class="bottom-nav">
+    <button class="active" data-nav="home"><span>⌂</span>Ana Sayfa</button>
+    <button data-nav="favorites"><span>♡</span>Favoriler</button>
+    <button data-nav="add"><span class="nav-add">+</span>İlan Ver</button>
+    <button data-nav="messages"><span>✉</span>Mesajlar</button>
+    <button data-nav="account"><span>◎</span>Hesabım</button>
+  </nav>
+
+  <dialog id="listingDialog" class="modal listing-modal"><button class="modal-close" data-close>×</button><div id="listingDetail"></div></dialog>
+  <dialog id="authDialog" class="modal auth-modal"><button class="modal-close" data-close>×</button><div class="auth-brand"><div class="brand-mark">UE</div><h2>Uzman Emlak</h2><p>Üyelik oluşturun veya hesabınıza giriş yapın.</p></div><div class="auth-tabs"><button class="active" data-auth-tab="login">Giriş Yap</button><button data-auth-tab="signup">Üye Ol</button></div><form id="loginForm" class="auth-form"><label>E-posta<input id="loginEmail" type="email" required /></label><label>Şifre<input id="loginPassword" type="password" minlength="6" required /></label><button class="gold-btn">Giriş Yap</button></form><form id="signupForm" class="auth-form hidden"><label>Ad Soyad<input id="signupName" required /></label><label>E-posta<input id="signupEmail" type="email" required /></label><label>Şifre<input id="signupPassword" type="password" minlength="6" required /></label><label>Telefon<input id="signupPhone" inputmode="tel" /></label><button class="gold-btn">Üye Ol</button><small>Üyelik sonrası e-posta doğrulaması istenebilir.</small></form></dialog>
+
+  <dialog id="listingFormDialog" class="modal form-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">PORTFÖY</div><h2 id="listingFormTitle">Yeni İlan Ver</h2><p>Bilgileri eksiksiz girin. Yeni ilanlar yönetici onayına gönderilir.</p></div><form id="listingForm" class="form-grid listing-form"><input id="editListingId" type="hidden" />
+    <label class="full">İlan Başlığı<input id="lfTitle" maxlength="120" required placeholder="Örn. Önerler'de Yatırımlık Ticari Arsa" /></label>
+    <label>İşlem<select id="lfDeal" required><option value="sale">Satılık</option><option value="rent">Kiralık</option><option value="land_share">Kat Karşılığı</option><option value="exchange">Takas</option></select></label>
+    <label>Kategori<select id="lfCategory" required><option value="Konut">Konut</option><option value="Arsa">Arsa</option><option value="İşyeri">İşyeri</option></select></label>
+    <label>Alt Kategori<input id="lfSubcategory" placeholder="Daire, Ticari Arsa, Dükkan..." /></label>
+    <label>Fiyat (TL)<input id="lfPrice" type="number" min="0" step="1" /></label>
+    <label>İl<input id="lfCity" value="Tekirdağ" /></label><label>İlçe<input id="lfDistrict" value="Çorlu" /></label><label>Mahalle<input id="lfNeighborhood" required /></label><label>Adres / Cadde<input id="lfAddress" /></label>
+    <label>Brüt m²<input id="lfGross" type="number" step="0.01" min="0" /></label><label>Net m²<input id="lfNet" type="number" step="0.01" min="0" /></label>
+    <div id="residentialFields" class="subform full"><label>Oda Sayısı<input id="lfRooms" placeholder="3+1" /></label><label>Kat<input id="lfFloor" /></label><label>Bina Yaşı<input id="lfBuildingAge" /></label><label>Isıtma<input id="lfHeating" placeholder="Kombi" /></label><label>Banyo<input id="lfBathroom" type="number" min="0" /></label><label>Toplam Kat<input id="lfTotalFloors" /></label></div>
+    <div id="landFields" class="subform full hidden"><label>Ada<input id="lfAda" /></label><label>Parsel<input id="lfParsel" /></label><label>İmar<input id="lfZoning" /></label><label>Emsal<input id="lfEmsal" /></label><label>Hmax<input id="lfHmax" /></label><label>Cephe<input id="lfFrontage" /></label></div>
+    <div class="check-grid full"><label><input id="lfBalcony" type="checkbox" /> Balkon</label><label><input id="lfElevator" type="checkbox" /> Asansör</label><label><input id="lfParking" type="checkbox" /> Otopark</label><label><input id="lfFurnished" type="checkbox" /> Eşyalı</label><label><input id="lfCredit" type="checkbox" /> Krediye Uygun</label></div>
+    <label class="full">Açıklama<textarea id="lfDescription" rows="7" required placeholder="Gayrimenkulün tüm detaylarını yazın..."></textarea></label>
+    <label>İletişim Adı<input id="lfContactName" /></label><label>İletişim Telefonu<input id="lfContactPhone" inputmode="tel" /></label>
+    <label class="full file-label">Fotoğraflar<input id="lfImages" type="file" accept="image/jpeg,image/png,image/webp" multiple /><small>En fazla 12 fotoğraf, dosya başına 10 MB.</small></label>
+    <div id="uploadPreview" class="upload-preview full"></div>
+    <div class="full form-actions"><button type="button" id="saveDraftBtn" class="ghost-btn">Taslak Kaydet</button><button class="gold-btn">Onaya Gönder</button></div>
+  </form></dialog>
+
+  <dialog id="filterDialog" class="modal filter-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">DETAYLI ARAMA</div><h2>Filtreler</h2></div><div class="form-grid"><label>Min. Fiyat<input id="fMinPrice" type="number" min="0" /></label><label>Maks. Fiyat<input id="fMaxPrice" type="number" min="0" /></label><label>Min. m²<input id="fMinM2" type="number" min="0" /></label><label>Maks. m²<input id="fMaxM2" type="number" min="0" /></label><label>Oda Sayısı<input id="fRooms" placeholder="3+1" /></label><label>Isıtma<input id="fHeating" placeholder="Kombi" /></label><label>Ada<input id="fAda" /></label><label>Parsel<input id="fParsel" /></label><div class="full form-actions"><button id="applyAdvancedFilter" class="gold-btn">Filtrele</button></div></div></dialog>
+
+  <script type="module" src="app.js?v=40"></script>
+</body>
+</html>

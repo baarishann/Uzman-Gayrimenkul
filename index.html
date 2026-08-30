@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0c" />
-  <meta name="description" content="Uzman Emlak - Çorlu ve çevresinde satılık, kiralık ve kat karşılığı gayrimenkuller." />
-  <link rel="manifest" href="manifest.json?v=40" />
+  <meta name="description" content="Uzman Emlak - Türkiye genelinde satılık, kiralık, arsa, işyeri, proje ve kat karşılığı gayrimenkul ilanları." />
+  <link rel="manifest" href="manifest.json?v=41" />
   <link rel="icon" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="stylesheet" href="style.css?v=40" />
+  <link rel="stylesheet" href="style.css?v=41" />
   <title>Uzman Emlak</title>
 </head>
 <body>
@@ -30,9 +30,9 @@
     <section id="homeView" class="view active-view">
       <section class="hero shell">
         <div class="hero-copy">
-          <div class="eyebrow">TEKİRDAĞ • ÇORLU</div>
-          <h1>Aradığınız gayrimenkulü <span>tek yerde</span> bulun.</h1>
-          <p>Satılık, kiralık, arsa, işyeri ve kat karşılığı portföyleri gelişmiş filtrelerle inceleyin.</p>
+          <div class="eyebrow">TÜRKİYE GENELİ • GÜVENİLİR EMLAK PLATFORMU</div>
+          <h1>Türkiye’nin her yerindeki gayrimenkulleri <span>tek yerde</span> keşfedin.</h1>
+          <p>81 ilde satılık, kiralık, arsa, konut, işyeri, proje ve kat karşılığı ilanları gelişmiş filtrelerle keşfedin; ilan verin, favorileyin ve doğrudan iletişime geçin.</p>
         </div>
         <div class="hero-search">
           <div class="search-tabs" id="dealTabs">
@@ -51,6 +51,8 @@
               <option value="Konut">Konut</option>
               <option value="Arsa">Arsa</option>
               <option value="İşyeri">İşyeri</option>
+              <option value="Proje">Projeler</option>
+              <option value="Turistik Tesis">Turistik Tesis</option>
             </select>
             <select id="neighborhoodFilter"><option value="all">Tüm Mahalleler</option></select>
             <select id="sortFilter">
@@ -69,6 +71,8 @@
         <button data-cat="Konut"><span>▦</span><b>Konut</b><small>Daire & villa</small></button>
         <button data-cat="İşyeri"><span>▤</span><b>İşyeri</b><small>Dükkan & ofis</small></button>
         <button data-deal-quick="land_share"><span>◇</span><b>Kat Karşılığı</b><small>Proje fırsatları</small></button>
+        <button data-cat="Proje"><span>▧</span><b>Projeler</b><small>Yeni yaşam projeleri</small></button>
+        <button data-cat="Turistik Tesis"><span>♢</span><b>Turistik Tesis</b><small>Otel & tesis fırsatları</small></button>
       </section>
 
       <section class="shell section-head">
@@ -147,10 +151,10 @@
   <dialog id="listingFormDialog" class="modal form-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">PORTFÖY</div><h2 id="listingFormTitle">Yeni İlan Ver</h2><p>Bilgileri eksiksiz girin. Yeni ilanlar yönetici onayına gönderilir.</p></div><form id="listingForm" class="form-grid listing-form"><input id="editListingId" type="hidden" />
     <label class="full">İlan Başlığı<input id="lfTitle" maxlength="120" required placeholder="Örn. Önerler'de Yatırımlık Ticari Arsa" /></label>
     <label>İşlem<select id="lfDeal" required><option value="sale">Satılık</option><option value="rent">Kiralık</option><option value="land_share">Kat Karşılığı</option><option value="exchange">Takas</option></select></label>
-    <label>Kategori<select id="lfCategory" required><option value="Konut">Konut</option><option value="Arsa">Arsa</option><option value="İşyeri">İşyeri</option></select></label>
+    <label>Kategori<select id="lfCategory" required><option value="Konut">Konut</option><option value="Arsa">Arsa</option><option value="İşyeri">İşyeri</option><option value="Proje">Proje</option><option value="Turistik Tesis">Turistik Tesis</option></select></label>
     <label>Alt Kategori<input id="lfSubcategory" placeholder="Daire, Ticari Arsa, Dükkan..." /></label>
     <label>Fiyat (TL)<input id="lfPrice" type="number" min="0" step="1" /></label>
-    <label>İl<input id="lfCity" value="Tekirdağ" /></label><label>İlçe<input id="lfDistrict" value="Çorlu" /></label><label>Mahalle<input id="lfNeighborhood" required /></label><label>Adres / Cadde<input id="lfAddress" /></label>
+    <label>İl<input id="lfCity" placeholder="Örn. İstanbul" required /></label><label>İlçe<input id="lfDistrict" placeholder="Örn. Kadıköy" required /></label><label>Mahalle<input id="lfNeighborhood" required /></label><label>Adres / Cadde<input id="lfAddress" /></label>
     <label>Brüt m²<input id="lfGross" type="number" step="0.01" min="0" /></label><label>Net m²<input id="lfNet" type="number" step="0.01" min="0" /></label>
     <div id="residentialFields" class="subform full"><label>Oda Sayısı<input id="lfRooms" placeholder="3+1" /></label><label>Kat<input id="lfFloor" /></label><label>Bina Yaşı<input id="lfBuildingAge" /></label><label>Isıtma<input id="lfHeating" placeholder="Kombi" /></label><label>Banyo<input id="lfBathroom" type="number" min="0" /></label><label>Toplam Kat<input id="lfTotalFloors" /></label></div>
     <div id="landFields" class="subform full hidden"><label>Ada<input id="lfAda" /></label><label>Parsel<input id="lfParsel" /></label><label>İmar<input id="lfZoning" /></label><label>Emsal<input id="lfEmsal" /></label><label>Hmax<input id="lfHmax" /></label><label>Cephe<input id="lfFrontage" /></label></div>
@@ -164,6 +168,6 @@
 
   <dialog id="filterDialog" class="modal filter-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">DETAYLI ARAMA</div><h2>Filtreler</h2></div><div class="form-grid"><label>Min. Fiyat<input id="fMinPrice" type="number" min="0" /></label><label>Maks. Fiyat<input id="fMaxPrice" type="number" min="0" /></label><label>Min. m²<input id="fMinM2" type="number" min="0" /></label><label>Maks. m²<input id="fMaxM2" type="number" min="0" /></label><label>Oda Sayısı<input id="fRooms" placeholder="3+1" /></label><label>Isıtma<input id="fHeating" placeholder="Kombi" /></label><label>Ada<input id="fAda" /></label><label>Parsel<input id="fParsel" /></label><div class="full form-actions"><button id="applyAdvancedFilter" class="gold-btn">Filtrele</button></div></div></dialog>
 
-  <script type="module" src="app.js?v=40"></script>
+  <script type="module" src="app.js?v=41"></script>
 </body>
 </html>

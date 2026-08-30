@@ -1,12 +1,12 @@
 {
   "name": "Uzman Emlak",
   "short_name": "Uzman Emlak",
-  "description": "Uzman Emlak gayrimenkul ilan platformu",
+  "description": "Uzman Emlak - Türkiye geneli gayrimenkul ilan platformu",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0a0a0b",
-  "theme_color": "#0a0a0b",
+  "background_color": "#071015",
+  "theme_color": "#071015",
   "lang": "tr",
   "icons": [
     {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},

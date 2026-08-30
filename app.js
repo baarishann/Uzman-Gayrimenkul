@@ -19,7 +19,7 @@ const statusLabels = { draft:'Taslak', pending:'Onay Bekliyor', active:'Yayında
 const fmt = new Intl.NumberFormat('tr-TR');
 
 function esc(v=''){ return String(v??'').replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':'&quot;'}[m])); }
-function toast(message,type='ok'){ const el=document.createElement('div'); el.className=`toast ${type}`; el.textContent=message; $('#toastRoot').append(el); setTimeout(()=>el.remove(),3600); }
+let lastToast={message:'',time:0}; function toast(message,type='ok'){ const now=Date.now(); if(lastToast.message===message && now-lastToast.time<2500)return; lastToast={message,time:now}; const el=document.createElement('div'); el.className=`toast ${type}`; el.textContent=message; $('#toastRoot').append(el); setTimeout(()=>el.remove(),3600); }
 function money(l){ if(l.price_text) return l.price_text; if(l.price!=null) return `${fmt.format(Number(l.price))} TL${l.deal==='rent'?'/ay':''}`; return 'Fiyat sorunuz'; }
 function loc(l){ return [l.neighborhood,l.district,l.city].filter(Boolean).join(' • '); }
 function phoneDigits(v=''){ return String(v).replace(/\D/g,'').replace(/^0/,'90').replace(/^5/,'905'); }
@@ -170,7 +170,7 @@ function fillProfile(){ $('#profileName').value=state.profile?.full_name||''; $(
 
 function openAuth(tab='login'){ $$('.auth-tabs button').forEach(x=>x.classList.toggle('active',x.dataset.authTab===tab)); $('#loginForm').classList.toggle('hidden',tab!=='login'); $('#signupForm').classList.toggle('hidden',tab!=='signup'); $('#authDialog').showModal(); }
 async function login(e){ e.preventDefault(); const email=$('#loginEmail').value.trim(), password=$('#loginPassword').value; const {error}=await supabase.auth.signInWithPassword({email,password}); if(error)return toast(error.message,'err'); $('#authDialog').close(); toast('Giriş yapıldı.'); }
-async function signup(e){ e.preventDefault(); const email=$('#signupEmail').value.trim(), password=$('#signupPassword').value, full_name=$('#signupName').value.trim(), phone=$('#signupPhone').value.trim(); const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name,phone}}}); if(error)return toast(error.message,'err'); if(data.session){ $('#authDialog').close(); toast('Üyeliğiniz oluşturuldu.'); } else toast('Üyelik oluşturuldu. E-postanızı doğrulayın.'); }
+async function signup(e){ e.preventDefault(); const email=$('#signupEmail').value.trim(), password=$('#signupPassword').value, full_name=$('#signupName').value.trim(), phone=$('#signupPhone').value.trim(); const emailRedirectTo='https://baarishann.github.io/Uzman-Gayrimenkul/'; const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo,data:{full_name,phone}}}); if(error)return toast(error.message,'err'); if(data.session){ $('#authDialog').close(); toast('Üyeliğiniz oluşturuldu.'); } else toast('Üyelik oluşturuldu. E-postanızı doğrulayın.'); }
 async function logout(){ await supabase.auth.signOut(); nav('home'); toast('Çıkış yapıldı.'); }
 async function saveProfile(e){ e.preventDefault(); if(!state.user)return; const payload={full_name:$('#profileName').value.trim(),phone:$('#profilePhone').value.trim(),company_name:$('#profileCompany').value.trim(),bio:$('#profileBio').value.trim()}; const {data,error}=await supabase.from('profiles').update(payload).eq('id',state.user.id).select().single(); if(error)return toast(error.message,'err'); state.profile=data; updateAuthUI(); toast('Profil güncellendi.'); }
 
@@ -183,14 +183,14 @@ function openListingForm(listing=null){
   if(!state.user) return openAuth('signup');
   $('#listingForm').reset(); $('#editListingId').value=listing?.id||''; $('#listingFormTitle').textContent=listing?'İlanı Düzenle':'Yeni İlan Ver';
   const vals={lfTitle:'title',lfDeal:'deal',lfCategory:'category',lfSubcategory:'subcategory',lfPrice:'price',lfCity:'city',lfDistrict:'district',lfNeighborhood:'neighborhood',lfAddress:'address_text',lfGross:'gross_m2',lfNet:'net_m2',lfRooms:'room_count',lfFloor:'floor',lfBuildingAge:'building_age',lfHeating:'heating',lfBathroom:'bathroom_count',lfTotalFloors:'total_floors',lfAda:'ada',lfParsel:'parsel',lfZoning:'zoning',lfEmsal:'emsal',lfHmax:'hmax',lfFrontage:'frontage',lfDescription:'description',lfContactName:'contact_name',lfContactPhone:'contact_phone'};
-  Object.entries(vals).forEach(([id,key])=>{ const el=$('#'+id); el.value=listing?.[key]??(id==='lfCity'?'Tekirdağ':id==='lfDistrict'?'Çorlu':id==='lfContactName'?(state.profile?.full_name||''):id==='lfContactPhone'?(state.profile?.phone||''):''); });
+  Object.entries(vals).forEach(([id,key])=>{ const el=$('#'+id); el.value=listing?.[key]??(id==='lfCity'?'':id==='lfDistrict'?'':id==='lfContactName'?(state.profile?.full_name||''):id==='lfContactPhone'?(state.profile?.phone||''):''); });
   ['Balcony','Elevator','Parking','Furnished','Credit'].forEach(x=>{ const key={Balcony:'balcony',Elevator:'elevator',Parking:'parking',Furnished:'furnished',Credit:'credit_eligible'}[x]; $('#lf'+x).checked=!!listing?.[key]; });
   $('#uploadPreview').innerHTML=''; toggleListingFields(); $('#listingFormDialog').showModal();
 }
 function toggleListingFields(){ const cat=$('#lfCategory').value; $('#landFields').classList.toggle('hidden',cat!=='Arsa'); $('#residentialFields').classList.toggle('hidden',cat==='Arsa'); }
 function listingPayload(status='pending'){
   const n=id=>$('#'+id).value.trim(); const num=id=>n(id)===''?null:Number(n(id));
-  const payload={title:n('lfTitle'),deal:n('lfDeal'),category:n('lfCategory'),subcategory:n('lfSubcategory')||null,price:num('lfPrice'),price_text:null,currency:'TRY',city:n('lfCity')||'Tekirdağ',district:n('lfDistrict')||'Çorlu',neighborhood:n('lfNeighborhood')||null,address_text:n('lfAddress')||null,gross_m2:num('lfGross'),net_m2:num('lfNet'),room_count:n('lfRooms')||null,floor:n('lfFloor')||null,building_age:n('lfBuildingAge')||null,heating:n('lfHeating')||null,bathroom_count:num('lfBathroom'),total_floors:n('lfTotalFloors')||null,ada:n('lfAda')||null,parsel:n('lfParsel')||null,zoning:n('lfZoning')||null,emsal:n('lfEmsal')||null,hmax:n('lfHmax')||null,frontage:n('lfFrontage')||null,balcony:$('#lfBalcony').checked,elevator:$('#lfElevator').checked,parking:$('#lfParking').checked,furnished:$('#lfFurnished').checked,credit_eligible:$('#lfCredit').checked,description:n('lfDescription'),contact_name:n('lfContactName')||state.profile?.full_name||'Uzman Emlak',contact_phone:n('lfContactPhone')||state.profile?.phone||null,status};
+  const payload={title:n('lfTitle'),deal:n('lfDeal'),category:n('lfCategory'),subcategory:n('lfSubcategory')||null,price:num('lfPrice'),price_text:null,currency:'TRY',city:n('lfCity')||null,district:n('lfDistrict')||null,neighborhood:n('lfNeighborhood')||null,address_text:n('lfAddress')||null,gross_m2:num('lfGross'),net_m2:num('lfNet'),room_count:n('lfRooms')||null,floor:n('lfFloor')||null,building_age:n('lfBuildingAge')||null,heating:n('lfHeating')||null,bathroom_count:num('lfBathroom'),total_floors:n('lfTotalFloors')||null,ada:n('lfAda')||null,parsel:n('lfParsel')||null,zoning:n('lfZoning')||null,emsal:n('lfEmsal')||null,hmax:n('lfHmax')||null,frontage:n('lfFrontage')||null,balcony:$('#lfBalcony').checked,elevator:$('#lfElevator').checked,parking:$('#lfParking').checked,furnished:$('#lfFurnished').checked,credit_eligible:$('#lfCredit').checked,description:n('lfDescription'),contact_name:n('lfContactName')||state.profile?.full_name||'Uzman Emlak',contact_phone:n('lfContactPhone')||state.profile?.phone||null,status};
   if(payload.price!=null) payload.price_text=`${fmt.format(payload.price)} TL${payload.deal==='rent'?'/ay':''}`;
   return payload;
 }
@@ -249,7 +249,7 @@ let deferredInstall=null;
 function bindUI(){
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hidden')});
   $('#installBtn').addEventListener('click',async()=>{if(deferredInstall){deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('#installBtn').classList.add('hidden')}});
-  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=40').catch(console.warn);
+  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=41').catch(console.warn);
   document.addEventListener('click',async e=>{
     const close=e.target.closest('[data-close]'); if(close){close.closest('dialog').close();return;}
     const navBtn=e.target.closest('[data-nav]'); if(navBtn){nav(navBtn.dataset.nav);return;}

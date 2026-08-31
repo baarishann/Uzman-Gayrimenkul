@@ -300,7 +300,7 @@ applyTheme(localStorage.getItem('uzman-emlak-theme')||'dark');
 function bindUI(){
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hidden')});
   $('#themeBtn').addEventListener('click',toggleTheme); $('#installBtn').addEventListener('click',installApp); $('#homeInstallBtn').addEventListener('click',installApp);
-  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=43').catch(console.warn);
+  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=46').catch(console.warn);
   document.addEventListener('click',async e=>{
     const close=e.target.closest('[data-close]'); if(close){close.closest('dialog').close();return;}
     const navBtn=e.target.closest('[data-nav]'); if(navBtn){nav(navBtn.dataset.nav);return;}

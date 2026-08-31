@@ -3,7 +3,7 @@
   "short_name": "Uzman Emlak",
   "description": "Uzman Emlak - Türkiye geneli gayrimenkul ilan platformu",
   "id": "/",
-  "start_url": "./",
+  "start_url": "./?v=48",
   "scope": "./",
   "display": "standalone",
   "background_color": "#071015",

@@ -6,6 +6,12 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
 
+const RECOVERY_INTENT = (() => {
+  const raw = `${window.location.search}${window.location.hash}`.toLowerCase();
+  return raw.includes('type=recovery') || raw.includes('reset=1') || raw.includes('password_recovery');
+})();
+let recoveryEventSeen = false;
+
 const $ = (s, root=document) => root.querySelector(s);
 const $$ = (s, root=document) => [...root.querySelectorAll(s)];
 const state = {
@@ -43,18 +49,36 @@ function factsFor(l){
 async function init(){
   bindUI();
   showSkeletons();
-  const { data:{ session } } = await supabase.auth.getSession();
-  state.user = session?.user || null;
-  await hydrateAccount();
-  await Promise.all([loadListings(), loadFavorites()]);
-  setupRealtime();
+
+  // Recovery olayı sayfa açılır açılmaz gelebilir. Dinleyiciyi getSession'dan ÖNCE kuruyoruz.
   supabase.auth.onAuthStateChange(async (event,session)=>{
-    if(event==='PASSWORD_RECOVERY') setTimeout(()=>$('#resetPasswordDialog').showModal(),100);
+    if(event==='PASSWORD_RECOVERY'){
+      recoveryEventSeen = true;
+      setTimeout(()=>openResetPasswordDialog(),120);
+    }
     state.user=session?.user||null;
     await hydrateAccount();
     await loadFavorites();
     setupRealtime();
   });
+
+  // PKCE recovery linklerinde ?code=... gelebilir; Supabase JS bunu işler.
+  const { data:{ session } } = await supabase.auth.getSession();
+  state.user = session?.user || null;
+  await hydrateAccount();
+  await Promise.all([loadListings(), loadFavorites()]);
+  setupRealtime();
+
+  // Bazı mobil/PWA tarayıcıları PASSWORD_RECOVERY eventini abonelikten önce tüketebiliyor.
+  // Linkte recovery işareti varsa oturum oluştuğunda modalı yine de zorla aç.
+  if(RECOVERY_INTENT && state.user){
+    setTimeout(()=>openResetPasswordDialog(),180);
+  }
+}
+
+function openResetPasswordDialog(){
+  const dlg=$('#resetPasswordDialog');
+  if(dlg && !dlg.open) dlg.showModal();
 }
 
 function showSkeletons(){ $('#listingLoading').innerHTML = Array.from({length:6},()=>'<div class="skeleton"></div>').join(''); }
@@ -182,8 +206,8 @@ function fillProfile(){ $('#profileName').value=state.profile?.full_name||''; $(
 function openAuth(tab='login'){ $$('.auth-tabs button').forEach(x=>x.classList.toggle('active',x.dataset.authTab===tab)); $('#loginForm').classList.toggle('hidden',tab!=='login'); $('#signupForm').classList.toggle('hidden',tab!=='signup'); $('#authDialog').showModal(); }
 async function login(e){ e.preventDefault(); const email=$('#loginEmail').value.trim(), password=$('#loginPassword').value; const {error}=await supabase.auth.signInWithPassword({email,password}); if(error)return toast(error.message,'err'); if($('#authDialog').open) $('#authDialog').close(); e.target.reset(); toast('Giriş yapıldı.'); }
 async function signup(e){ e.preventDefault(); const email=$('#signupEmail').value.trim(), password=$('#signupPassword').value, full_name=$('#signupName').value.trim(), phone=$('#signupPhone').value.trim(); const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name,phone}}}); if(error)return toast(error.message,'err'); if(!data.session){ const signed=await supabase.auth.signInWithPassword({email,password}); if(signed.error)return toast('Üyelik oluşturuldu. Şimdi giriş yapabilirsiniz.'); } if($('#authDialog').open) $('#authDialog').close(); e.target.reset(); toast('Üyeliğiniz başarıyla oluşturuldu. Giriş yapıldı.'); }
-async function forgotPassword(){ const email=$('#loginEmail').value.trim(); if(!email)return toast('Önce e-posta adresinizi yazın.','err'); const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:'https://uzmangayrimenkulcorlu.com/'}); if(error)return toast(error.message,'err'); toast('Şifre yenileme bağlantısı e-postanıza gönderildi.'); }
-async function updatePassword(e){e.preventDefault();const a=$('#newPassword').value,b=$('#newPassword2').value;if(a!==b)return toast('Şifreler aynı değil.','err');const {error}=await supabase.auth.updateUser({password:a});if(error)return toast(error.message,'err');$('#resetPasswordDialog').close();e.target.reset();toast('Şifreniz güncellendi.');}
+async function forgotPassword(){ const email=$('#loginEmail').value.trim(); if(!email)return toast('Önce e-posta adresinizi yazın.','err'); const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:'https://uzmangayrimenkulcorlu.com/?reset=1'}); if(error)return toast(error.message,'err'); toast('Şifre yenileme bağlantısı e-postanıza gönderildi.'); }
+async function updatePassword(e){e.preventDefault();const a=$('#newPassword').value,b=$('#newPassword2').value;if(a!==b)return toast('Şifreler aynı değil.','err');const {error}=await supabase.auth.updateUser({password:a});if(error)return toast(error.message,'err');$('#resetPasswordDialog').close();e.target.reset();toast('Şifreniz güncellendi. Yeni şifrenizle giriş yapabilirsiniz.'); history.replaceState({},document.title,'/');}
 async function logout(){ await supabase.auth.signOut(); nav('home'); toast('Çıkış yapıldı.'); }
 async function saveProfile(e){ e.preventDefault(); if(!state.user)return; const payload={full_name:$('#profileName').value.trim(),phone:$('#profilePhone').value.trim(),company_name:$('#profileCompany').value.trim(),bio:$('#profileBio').value.trim()}; const {data,error}=await supabase.from('profiles').update(payload).eq('id',state.user.id).select().single(); if(error)return toast(error.message,'err'); state.profile=data; updateAuthUI(); toast('Profil güncellendi.'); }
 
@@ -307,7 +331,7 @@ applyTheme(localStorage.getItem('uzman-emlak-theme')||'dark');
 function bindUI(){
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hidden')});
   $('#themeBtn').addEventListener('click',toggleTheme); $('#installBtn').addEventListener('click',installApp); $('#homeInstallBtn').addEventListener('click',installApp);
-  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=47').catch(console.warn);
+  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=48').catch(console.warn);
   document.addEventListener('click',async e=>{
     const close=e.target.closest('[data-close]'); if(close){close.closest('dialog').close();return;}
     const navBtn=e.target.closest('[data-nav]'); if(navBtn){nav(navBtn.dataset.nav);return;}

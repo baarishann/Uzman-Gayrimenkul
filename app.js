@@ -48,7 +48,8 @@ async function init(){
   await hydrateAccount();
   await Promise.all([loadListings(), loadFavorites()]);
   setupRealtime();
-  supabase.auth.onAuthStateChange(async (_event,session)=>{
+  supabase.auth.onAuthStateChange(async (event,session)=>{
+    if(event==='PASSWORD_RECOVERY') setTimeout(()=>$('#resetPasswordDialog').showModal(),100);
     state.user=session?.user||null;
     await hydrateAccount();
     await loadFavorites();
@@ -133,10 +134,10 @@ async function openListing(id){
   if(!l){ const {data}=await supabase.from('listings').select('*').eq('id',id).single(); l=data; }
   if(!l) return;
   addRecent(id);
-  const imgs=l.images||[]; const hero=imgs.find(x=>x.is_cover)?.image_url||imgs[0]?.image_url;
+  let imgs=l.images||[]; if(!imgs.length){const {data:im}=await supabase.from('listing_images').select('*').eq('listing_id',l.id).order('sort_order');imgs=im||[];l.images=imgs;} const hero=imgs.find(x=>x.is_cover)?.image_url||imgs[0]?.image_url; const gallery=imgs.length?`<div class="detail-gallery" data-gallery>${imgs.map((im,i)=>`<div class="gallery-slide"><img src="${esc(im.image_url)}" alt="${esc(l.title)} ${i+1}"><span>${i+1}/${imgs.length}</span></div>`).join('')}</div>`:(hero?`<div class="detail-hero"><img src="${esc(hero)}" alt="${esc(l.title)}"></div>`:`<div class="detail-hero">${placeholder()}</div>`);
   const details=[['İşlem',dealLabels[l.deal]],['Kategori',l.category],['Alt Kategori',l.subcategory],['Brüt m²',l.gross_m2?`${fmt.format(Number(l.gross_m2))} m²`:null],['Net m²',l.net_m2?`${fmt.format(Number(l.net_m2))} m²`:null],['Oda',l.room_count],['Kat',l.floor],['Isıtma',l.heating],['Ada',l.ada],['Parsel',l.parsel],['İmar',l.zoning],['Emsal',l.emsal],['Hmax',l.hmax]].filter(x=>x[1]);
   const phone=l.contact_phone||'05061347675';
-  $('#listingDetail').innerHTML=`<div class="detail-hero">${hero?`<img src="${esc(hero)}" alt="${esc(l.title)}">`:placeholder()}</div><div class="detail-content">
+  $('#listingDetail').innerHTML=`${gallery}<div class="detail-content">
     <div class="detail-title"><div class="location">${esc(loc(l))} • İlan No ${esc(l.listing_no)}</div><h2>${esc(l.title)}</h2><div class="detail-price">${esc(money(l))}</div></div>
     <div class="detail-grid"><div><div class="detail-box"><div class="detail-facts">${details.map(([k,v])=>`<div class="detail-fact"><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div></div>
       <div class="detail-box" style="margin-top:12px"><h3>Açıklama</h3><div class="detail-description">${esc(l.description||'Detaylı bilgi için iletişime geçebilirsiniz.')}</div></div></div>
@@ -144,7 +145,7 @@ async function openListing(id){
         <a class="gold-btn" style="display:block;text-align:center;text-decoration:none" href="tel:${esc(phoneDigits(phone))}">Ara</a>
         <a class="ghost-btn" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/${esc(phoneDigits(phone))}?text=${encodeURIComponent(`Merhaba, ${l.listing_no} numaralı ${l.title} ilanı hakkında bilgi almak istiyorum.`)}">WhatsApp</a>
         ${l.owner_id?`<button class="ghost-btn" data-message-owner="${l.id}">Uygulamadan Mesaj At</button>`:''}
-        <button class="ghost-btn" data-share-listing="${l.id}">İlanı Paylaş</button>
+        <button class="ghost-btn" data-share-listing="${l.id}">İlanı Paylaş</button><button class="ghost-btn" data-report-listing="${l.id}">İlanı Şikayet Et</button>
       </div></aside></div></div>`;
   $('#listingDialog').showModal();
 }
@@ -176,11 +177,13 @@ function updateAuthUI(){
   if(state.user){ const n=state.profile?.full_name||state.user.email||'U'; $('#userBtn').textContent=n.trim().charAt(0).toLocaleUpperCase('tr'); }
   $('#adminTabBtn').classList.toggle('hidden',!isStaff());
 }
-function fillProfile(){ $('#profileName').value=state.profile?.full_name||''; $('#profilePhone').value=state.profile?.phone||''; $('#profileCompany').value=state.profile?.company_name||''; $('#profileBio').value=state.profile?.bio||''; }
+function fillProfile(){ $('#profileName').value=state.profile?.full_name||''; $('#profilePhone').value=state.profile?.phone||''; $('#profileCompany').value=state.profile?.company_name||''; $('#profileBio').value=state.profile?.bio||''; const a=$('#profileAvatar'); if(a){a.innerHTML=state.profile?.avatar_url?`<img src="${esc(state.profile.avatar_url)}" alt="Profil">`:esc((state.profile?.full_name||'Ü').trim().charAt(0).toLocaleUpperCase('tr'));} }
 
 function openAuth(tab='login'){ $$('.auth-tabs button').forEach(x=>x.classList.toggle('active',x.dataset.authTab===tab)); $('#loginForm').classList.toggle('hidden',tab!=='login'); $('#signupForm').classList.toggle('hidden',tab!=='signup'); $('#authDialog').showModal(); }
 async function login(e){ e.preventDefault(); const email=$('#loginEmail').value.trim(), password=$('#loginPassword').value; const {error}=await supabase.auth.signInWithPassword({email,password}); if(error)return toast(error.message,'err'); if($('#authDialog').open) $('#authDialog').close(); e.target.reset(); toast('Giriş yapıldı.'); }
 async function signup(e){ e.preventDefault(); const email=$('#signupEmail').value.trim(), password=$('#signupPassword').value, full_name=$('#signupName').value.trim(), phone=$('#signupPhone').value.trim(); const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name,phone}}}); if(error)return toast(error.message,'err'); if(!data.session){ const signed=await supabase.auth.signInWithPassword({email,password}); if(signed.error)return toast('Üyelik oluşturuldu. Şimdi giriş yapabilirsiniz.'); } if($('#authDialog').open) $('#authDialog').close(); e.target.reset(); toast('Üyeliğiniz başarıyla oluşturuldu. Giriş yapıldı.'); }
+async function forgotPassword(){ const email=$('#loginEmail').value.trim(); if(!email)return toast('Önce e-posta adresinizi yazın.','err'); const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:'https://uzmangayrimenkulcorlu.com/'}); if(error)return toast(error.message,'err'); toast('Şifre yenileme bağlantısı e-postanıza gönderildi.'); }
+async function updatePassword(e){e.preventDefault();const a=$('#newPassword').value,b=$('#newPassword2').value;if(a!==b)return toast('Şifreler aynı değil.','err');const {error}=await supabase.auth.updateUser({password:a});if(error)return toast(error.message,'err');$('#resetPasswordDialog').close();e.target.reset();toast('Şifreniz güncellendi.');}
 async function logout(){ await supabase.auth.signOut(); nav('home'); toast('Çıkış yapıldı.'); }
 async function saveProfile(e){ e.preventDefault(); if(!state.user)return; const payload={full_name:$('#profileName').value.trim(),phone:$('#profilePhone').value.trim(),company_name:$('#profileCompany').value.trim(),bio:$('#profileBio').value.trim()}; const {data,error}=await supabase.from('profiles').update(payload).eq('id',state.user.id).select().single(); if(error)return toast(error.message,'err'); state.profile=data; updateAuthUI(); toast('Profil güncellendi.'); }
 
@@ -221,11 +224,15 @@ async function saveListing(e,status='pending'){ if(e)e.preventDefault(); if(!sta
   const listing=result.data; const files=[...$('#lfImages').files].slice(0,12); if(files.length) await uploadListingImages(listing.id,files);
   $('#listingFormDialog').close(); toast(status==='draft'?'Taslak kaydedildi.':'İlan yönetici onayına gönderildi.'); await loadListings(); await loadMyListings(); if(isStaff())await loadAdmin('pending'); }
 async function uploadListingImages(listingId,files){
-  let order=0; for(const file of files){ if(file.size>10*1024*1024){toast(`${file.name} 10 MB sınırını aşıyor.`,'err');continue;} const ext=(file.name.split('.').pop()||'jpg').toLowerCase(); const path=`${state.user.id}/${listingId}/${crypto.randomUUID()}.${ext}`; const {data,error}=await supabase.storage.from('listing-images').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type}); if(error){toast(`Fotoğraf yüklenemedi: ${error.message}`,'err');continue;} const {data:urlData}=supabase.storage.from('listing-images').getPublicUrl(data.path); const {error:dbErr}=await supabase.from('listing_images').insert({listing_id:listingId,image_url:urlData.publicUrl,sort_order:order,is_cover:order===0}); if(dbErr)toast(dbErr.message,'err'); order++; }
+  const {data:existing}=await supabase.from('listing_images').select('id,sort_order').eq('listing_id',listingId).order('sort_order',{ascending:false}).limit(1); let order=existing?.length?Number(existing[0].sort_order||0)+1:0; for(const file of files){ if(file.size>10*1024*1024){toast(`${file.name} 10 MB sınırını aşıyor.`,'err');continue;} const ext=(file.name.split('.').pop()||'jpg').toLowerCase(); const path=`${state.user.id}/${listingId}/${crypto.randomUUID()}.${ext}`; const {data,error}=await supabase.storage.from('listing-images').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type}); if(error){toast(`Fotoğraf yüklenemedi: ${error.message}`,'err');continue;} const {data:urlData}=supabase.storage.from('listing-images').getPublicUrl(data.path); const {error:dbErr}=await supabase.from('listing_images').insert({listing_id:listingId,image_url:urlData.publicUrl,sort_order:order,is_cover:order===0}); if(dbErr)toast(dbErr.message,'err'); order++; }
 }
 async function deleteListing(id){ if(!confirm('Bu ilanı silmek istediğinize emin misiniz?'))return; const {error}=await supabase.from('listings').delete().eq('id',id); if(error)return toast(error.message,'err'); toast('İlan silindi.'); await loadListings();await loadMyListings(); }
 async function ownerStatus(id,status){ const {error}=await supabase.from('listings').update({status}).eq('id',id); if(error)return toast(error.message,'err'); toast('İlan durumu güncellendi.'); await loadListings();await loadMyListings(); }
 
+async function uploadProfilePhoto(file){ if(!state.user||!file)return; if(file.size>5*1024*1024)return toast('Profil fotoğrafı en fazla 5 MB olabilir.','err'); const ext=(file.name.split('.').pop()||'jpg').toLowerCase(); const path=`avatars/${state.user.id}/${crypto.randomUUID()}.${ext}`; const {data,error}=await supabase.storage.from('listing-images').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type}); if(error)return toast(error.message,'err'); const {data:url}=supabase.storage.from('listing-images').getPublicUrl(data.path); const {data:p,error:e}=await supabase.from('profiles').update({avatar_url:url.publicUrl}).eq('id',state.user.id).select().single(); if(e)return toast(e.message,'err');state.profile=p;fillProfile();updateAuthUI();toast('Profil fotoğrafı güncellendi.');}
+async function sendFeedback(e){e.preventDefault();if(!state.user)return openAuth();const reason=$('#feedbackType').value,details=$('#feedbackDetails').value.trim();if(!details)return;const {error}=await supabase.from('reports').insert({reporter_id:state.user.id,reason,details,status:'open'});if(error)return toast(error.message,'err');e.target.reset();toast('Bildiriminiz gönderildi.');}
+async function reportListing(id){if(!state.user)return openAuth();const details=prompt('İlanla ilgili şikayetinizi kısaca yazın:');if(!details)return;const {error}=await supabase.from('reports').insert({reporter_id:state.user.id,listing_id:id,reason:'listing_complaint',details,status:'open'});if(error)return toast(error.message,'err');toast('İlan şikayeti gönderildi.');}
+async function deleteMyAccount(){if(!state.user)return;if(!confirm('Hesabınız kalıcı olarak silinecek. Bu işlem geri alınamaz. Devam edilsin mi?'))return;const {error}=await supabase.functions.invoke('delete-my-account',{body:{confirm:true}});if(error)return toast(error.message,'err');await supabase.auth.signOut();nav('home');toast('Hesabınız silindi.');}
 async function loadNotifications(){ if(!state.user)return; const {data}=await supabase.from('notifications').select('*').eq('user_id',state.user.id).order('created_at',{ascending:false}).limit(100); const arr=data||[]; const unread=arr.filter(x=>!x.read_at).length; $('#notificationBadge').textContent=unread; $('#notificationBadge').classList.toggle('hidden',!unread); $('#notificationList').innerHTML=arr.map(n=>`<div class="notification-item" data-notification="${n.id}"><div><h3 style="margin:0 0 5px">${esc(n.title)} ${!n.read_at?'<span class="chip gold">YENİ</span>':''}</h3><p>${esc(n.body||'')} • ${new Date(n.created_at).toLocaleString('tr-TR')}</p></div>${!n.read_at?`<button class="mini-btn" data-read-notification="${n.id}">Okundu</button>`:''}</div>`).join('')||'<div class="empty-state"><div>♢</div><h3>Bildirim yok</h3></div>'; }
 async function readNotification(id){ await supabase.from('notifications').update({read_at:new Date().toISOString()}).eq('id',id); await loadNotifications(); }
 async function markAllRead(){ if(!state.user)return; await supabase.from('notifications').update({read_at:new Date().toISOString()}).eq('user_id',state.user.id).is('read_at',null); await loadNotifications(); }
@@ -300,7 +307,7 @@ applyTheme(localStorage.getItem('uzman-emlak-theme')||'dark');
 function bindUI(){
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hidden')});
   $('#themeBtn').addEventListener('click',toggleTheme); $('#installBtn').addEventListener('click',installApp); $('#homeInstallBtn').addEventListener('click',installApp);
-  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=46').catch(console.warn);
+  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=47').catch(console.warn);
   document.addEventListener('click',async e=>{
     const close=e.target.closest('[data-close]'); if(close){close.closest('dialog').close();return;}
     const navBtn=e.target.closest('[data-nav]'); if(navBtn){nav(navBtn.dataset.nav);return;}
@@ -316,6 +323,7 @@ function bindUI(){
     const conv=e.target.closest('[data-conversation]'); if(conv){await openConversation(conv.dataset.conversation);return;}
     const rn=e.target.closest('[data-read-notification]'); if(rn){await readNotification(rn.dataset.readNotification);return;}
     const msg=e.target.closest('[data-message-owner]'); if(msg){await startListingConversation(msg.dataset.messageOwner);return;}
+    const rep=e.target.closest('[data-report-listing]'); if(rep){await reportListing(rep.dataset.reportListing);return;}
     const share=e.target.closest('[data-share-listing]'); if(share){const l=state.listings.find(x=>x.id===share.dataset.shareListing); const text=`${l?.title||'Uzman Emlak'} - ${money(l||{})}`; if(navigator.share) navigator.share({title:'Uzman Emlak',text,url:location.href}); else navigator.clipboard.writeText(`${text} ${location.href}`).then(()=>toast('Bağlantı kopyalandı.')); return;}
     const at=e.target.closest('[data-account-tab]'); if(at){accountTab(at.dataset.accountTab);return;}
     const ad=e.target.closest('[data-admin-section]'); if(ad){$$('[data-admin-section]').forEach(x=>x.classList.toggle('active',x===ad));await loadAdmin(ad.dataset.adminSection);return;}
@@ -324,7 +332,7 @@ function bindUI(){
     const qdeal=e.target.closest('[data-deal-quick]'); if(qdeal){state.filters.deal=qdeal.dataset.dealQuick;$$('#dealTabs button').forEach(x=>x.classList.toggle('active',x.dataset.deal===state.filters.deal));renderListings();return;}
   });
   document.addEventListener('change',async e=>{ if(e.target.matches('[data-role-select]')) await changeUserRole(e.target.dataset.roleSelect,e.target.value); });
-  $('#authBtn').onclick=()=>openAuth(); $('#userBtn').onclick=()=>nav('account'); $('#loginForm').onsubmit=login; $('#signupForm').onsubmit=signup; $('#logoutBtn').onclick=logout; $('#profileForm').onsubmit=saveProfile; $('#listingForm').onsubmit=e=>saveListing(e,'pending'); $('#saveDraftBtn').onclick=()=>saveListing(null,'draft'); $('#newListingBtn2').onclick=()=>openListingForm(); $('#floatingAddBtn').onclick=()=>openListingForm(); $('#lfCategory').onchange=toggleListingFields; $('#messageForm').onsubmit=sendMessage; $('#markAllReadBtn').onclick=markAllRead; $('#clearRecentBtn').onclick=clearRecent;
+  $('#authBtn').onclick=()=>openAuth(); $('#forgotPasswordBtn').onclick=forgotPassword; $('#resetPasswordForm').onsubmit=updatePassword; $('#feedbackForm').onsubmit=sendFeedback; $('#deleteAccountBtn').onclick=deleteMyAccount; $('#profilePhoto').onchange=e=>uploadProfilePhoto(e.target.files?.[0]); $('#userBtn').onclick=()=>nav('account'); $('#loginForm').onsubmit=login; $('#signupForm').onsubmit=signup; $('#logoutBtn').onclick=logout; $('#profileForm').onsubmit=saveProfile; $('#listingForm').onsubmit=e=>saveListing(e,'pending'); $('#saveDraftBtn').onclick=()=>saveListing(null,'draft'); $('#newListingBtn2').onclick=()=>openListingForm(); $('#floatingAddBtn').onclick=()=>openListingForm(); $('#lfCategory').onchange=toggleListingFields; $('#messageForm').onsubmit=sendMessage; $('#markAllReadBtn').onclick=markAllRead; $('#clearRecentBtn').onclick=clearRecent;
   $('#lfImages').onchange=()=>{const files=[...$('#lfImages').files].slice(0,12);$('#uploadPreview').innerHTML=files.map(f=>`<div class="upload-thumb"><img src="${URL.createObjectURL(f)}"></div>`).join('')};
   $$('#dealTabs button').forEach(b=>b.onclick=()=>{state.filters.deal=b.dataset.deal;$$('#dealTabs button').forEach(x=>x.classList.toggle('active',x===b));renderListings()});
   $('#searchBtn').onclick=()=>{state.filters.q=$('#searchInput').value.trim();renderListings()}; $('#searchInput').onkeydown=e=>{if(e.key==='Enter'){$('#searchBtn').click()}};

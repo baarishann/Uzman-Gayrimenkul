@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0c" />
   <meta name="description" content="Uzman Emlak - Türkiye genelinde satılık, kiralık, arsa, işyeri ve kat karşılığı gayrimenkul ilanları." />
-  <link rel="manifest" href="manifest.json?v=46" />
+  <link rel="manifest" href="manifest.json?v=47" />
   <link rel="icon" href="uzman-emlak-icon-v46-192.png" />
   <link rel="apple-touch-icon" href="uzman-emlak-icon-v46-192.png" />
-  <link rel="stylesheet" href="style.css?v=46" />
+  <link rel="stylesheet" href="style.css?v=47" />
   <title>Uzman Emlak</title>
 </head>
 <body>
@@ -115,18 +115,18 @@
         <aside class="account-sidebar">
           <button class="active" data-account-tab="profile">Profilim</button>
           <button data-account-tab="listings">İlanlarım</button>
-          <button data-account-tab="notifications">Bildirimler <span id="notificationBadge" class="badge hidden">0</span></button>
+          <button data-account-tab="notifications">Bildirimler <span id="notificationBadge" class="badge hidden">0</span></button><button data-account-tab="support">Destek & Güvenlik</button>
           <button id="adminTabBtn" data-account-tab="admin" class="hidden">Yönetim Paneli</button>
         </aside>
         <div class="account-content">
           <section id="profileTab" class="account-tab active-account-tab">
-            <div class="panel-card"><h2>Profil Bilgileri</h2><form id="profileForm" class="form-grid"><label>Ad Soyad<input id="profileName" required /></label><label>Telefon<input id="profilePhone" inputmode="tel" /></label><label>Firma<input id="profileCompany" /></label><label class="full">Hakkımda<textarea id="profileBio" rows="4"></textarea></label><div class="full form-actions"><button class="gold-btn">Profili Kaydet</button></div></form></div>
+            <div class="panel-card"><h2>Profil Bilgileri</h2><div class="profile-photo-row"><div id="profileAvatar" class="profile-avatar">Ü</div><label class="ghost-btn avatar-upload">Profil Fotoğrafı<input id="profilePhoto" type="file" accept="image/jpeg,image/png,image/webp" hidden></label></div><form id="profileForm" class="form-grid"><label>Ad Soyad<input id="profileName" required /></label><label>Telefon<input id="profilePhone" inputmode="tel" /></label><label>Firma<input id="profileCompany" /></label><label class="full">Hakkımda<textarea id="profileBio" rows="4"></textarea></label><div class="full form-actions"><button class="gold-btn">Profili Kaydet</button></div></form></div>
           </section>
           <section id="listingsTab" class="account-tab">
             <div class="tab-toolbar"><div><h2>İlanlarım</h2><p>İlanlarınız onaylandıktan sonra yayına alınır.</p></div><button id="newListingBtn2" class="gold-btn">+ Yeni İlan</button></div>
             <div id="myListings" class="manage-list"></div>
           </section>
-          <section id="notificationsTab" class="account-tab"><div class="tab-toolbar"><div><h2>Bildirimler</h2><p>İlan ve mesaj hareketleri.</p></div><button id="markAllReadBtn" class="ghost-btn">Tümünü okundu yap</button></div><div id="notificationList" class="notification-list"></div></section>
+          <section id="supportTab" class="account-tab"><div class="panel-card"><h2>Destek & Güvenlik</h2><p class="location">Önerinizi, karşılaştığınız sorunu veya şikayetinizi bize iletin.</p><form id="feedbackForm" class="form-grid"><label>Bildirim Türü<select id="feedbackType"><option value="suggestion">Öneri</option><option value="problem">Sorun / Hata</option><option value="complaint">Şikayet</option><option value="other">Diğer</option></select></label><label class="full">Açıklama<textarea id="feedbackDetails" rows="5" required maxlength="3000"></textarea></label><div class="full form-actions"><button class="gold-btn">Gönder</button></div></form><hr class="soft-rule"><details><summary>Gizlilik & KVKK</summary><p class="location">Hesap ve ilan işlemleri için verdiğiniz ad, iletişim, profil ve ilan bilgileri platformun çalışması, güvenlik ve destek amaçlarıyla işlenir. Yalnızca gerekli bilgileri paylaşın. Ayrıntılı ve hukuki metin yayına alınmadan önce profesyonel inceleme önerilir.</p></details><details><summary>Kullanım Koşulları</summary><p class="location">Kullanıcılar ilan ve mesaj içeriklerinin doğruluğundan sorumludur. Sahte, yanıltıcı, hukuka aykırı veya başkalarının haklarını ihlal eden içerikler kaldırılabilir.</p></details><div class="danger-zone"><h3>Hesabı Sil</h3><p class="location">Bu işlem geri alınamaz.</p><button id="deleteAccountBtn" class="danger-btn" type="button">Hesabımı Kalıcı Olarak Sil</button></div></div></section><section id="notificationsTab" class="account-tab"><div class="tab-toolbar"><div><h2>Bildirimler</h2><p>İlan ve mesaj hareketleri.</p></div><button id="markAllReadBtn" class="ghost-btn">Tümünü okundu yap</button></div><div id="notificationList" class="notification-list"></div></section>
           <section id="adminTab" class="account-tab">
             <div class="admin-stats" id="adminStats"></div>
             <div class="admin-tabs"><button class="active" data-admin-section="pending">Onay Bekleyen</button><button data-admin-section="all">Tüm İlanlar</button><button data-admin-section="users">Üyeler</button><button data-admin-section="reports">Şikayetler</button><button data-admin-section="status">Sistem Durumu</button><button data-admin-section="audit">Yönetici Kayıtları</button><button data-admin-section="stats">İstatistikler</button></div>
@@ -148,7 +148,8 @@
   </nav>
 
   <dialog id="listingDialog" class="modal listing-modal"><button class="modal-close" data-close>×</button><div id="listingDetail"></div></dialog>
-  <dialog id="authDialog" class="modal auth-modal"><button class="modal-close" data-close>×</button><div class="auth-brand"><h2>Uzman Emlak</h2><p>Üyelik oluşturun veya hesabınıza giriş yapın.</p></div><div class="auth-tabs"><button class="active" data-auth-tab="login">Giriş Yap</button><button data-auth-tab="signup">Üye Ol</button></div><form id="loginForm" class="auth-form"><label>E-posta<input id="loginEmail" type="email" required /></label><label>Şifre<input id="loginPassword" type="password" minlength="6" required /></label><button class="gold-btn">Giriş Yap</button></form><form id="signupForm" class="auth-form hidden"><label>Ad Soyad<input id="signupName" required /></label><label>E-posta<input id="signupEmail" type="email" required /></label><label>Şifre<input id="signupPassword" type="password" minlength="6" required /></label><label>Telefon<input id="signupPhone" inputmode="tel" /></label><button class="gold-btn">Üye Ol</button><small>Üyeliğiniz oluşturulduğunda otomatik giriş yapılır.</small></form></dialog>
+  <dialog id="authDialog" class="modal auth-modal"><button class="modal-close" data-close>×</button><div class="auth-brand"><h2>Uzman Emlak</h2><p>Üyelik oluşturun veya hesabınıza giriş yapın.</p></div><div class="auth-tabs"><button class="active" data-auth-tab="login">Giriş Yap</button><button data-auth-tab="signup">Üye Ol</button></div><form id="loginForm" class="auth-form"><label>E-posta<input id="loginEmail" type="email" required /></label><label>Şifre<input id="loginPassword" type="password" minlength="6" required /></label><button class="gold-btn">Giriş Yap</button><button id="forgotPasswordBtn" class="text-btn" type="button">Şifremi Unuttum</button></form><form id="signupForm" class="auth-form hidden"><label>Ad Soyad<input id="signupName" required /></label><label>E-posta<input id="signupEmail" type="email" required /></label><label>Şifre<input id="signupPassword" type="password" minlength="6" required /></label><label>Telefon<input id="signupPhone" inputmode="tel" /></label><button class="gold-btn">Üye Ol</button><small>Üyeliğiniz oluşturulduğunda otomatik giriş yapılır.</small></form></dialog>
+  <dialog id="resetPasswordDialog" class="modal auth-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><h2>Yeni Şifre Belirle</h2><p>Yeni şifrenizi iki kez girin.</p></div><form id="resetPasswordForm" class="auth-form"><label>Yeni Şifre<input id="newPassword" type="password" minlength="6" required></label><label>Yeni Şifre Tekrar<input id="newPassword2" type="password" minlength="6" required></label><button class="gold-btn">Şifreyi Güncelle</button></form></dialog>
 
   <dialog id="listingFormDialog" class="modal form-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">PORTFÖY</div><h2 id="listingFormTitle">Yeni İlan Ver</h2><p>Bilgileri eksiksiz girin. Yeni ilanlar yönetici onayına gönderilir.</p></div><form id="listingForm" class="form-grid listing-form"><input id="editListingId" type="hidden" />
     <label class="full">İlan Başlığı<input id="lfTitle" maxlength="120" required placeholder="Örn. Önerler'de Yatırımlık Ticari Arsa" /></label>
@@ -170,6 +171,6 @@
 
   <dialog id="filterDialog" class="modal filter-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">DETAYLI ARAMA</div><h2>Filtreler</h2></div><div class="form-grid"><label>Min. Fiyat<input id="fMinPrice" type="number" min="0" /></label><label>Maks. Fiyat<input id="fMaxPrice" type="number" min="0" /></label><label>Min. m²<input id="fMinM2" type="number" min="0" /></label><label>Maks. m²<input id="fMaxM2" type="number" min="0" /></label><label>Oda Sayısı<input id="fRooms" placeholder="3+1" /></label><label>Isıtma<input id="fHeating" placeholder="Kombi" /></label><label>Ada<input id="fAda" /></label><label>Parsel<input id="fParsel" /></label><div class="full form-actions"><button id="applyAdvancedFilter" class="gold-btn">Filtrele</button></div></div></dialog>
 
-  <script type="module" src="app.js?v=46"></script>
+  <script type="module" src="app.js?v=47"></script>
 </body>
 </html>

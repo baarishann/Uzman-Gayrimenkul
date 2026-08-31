@@ -46,9 +46,39 @@ function factsFor(l){
   return facts.slice(0,4);
 }
 
+function getVisitorId(){
+  let id=localStorage.getItem('uzman-emlak-visitor-id');
+  if(!id){ id=(crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`); localStorage.setItem('uzman-emlak-visitor-id',id); }
+  return id;
+}
+async function trackSiteVisit(){
+  try{
+    const visitor_id=getVisitorId();
+    const last=Number(sessionStorage.getItem('uzman-emlak-visit-tracked')||0);
+    if(Date.now()-last<30*60*1000) return;
+    sessionStorage.setItem('uzman-emlak-visit-tracked',String(Date.now()));
+    const {data:{session}}=await supabase.auth.getSession();
+    await supabase.from('site_visits').insert({visitor_id,user_id:session?.user?.id||null,path:location.pathname});
+  }catch(e){ console.warn('Ziyaret kaydı alınamadı',e); }
+}
+async function loadVisitStats(){
+  const now=Date.now(), day=24*60*60*1000;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const since30=new Date(now-30*day).toISOString();
+  const {data,error}=await supabase.from('site_visits').select('visitor_id,created_at').gte('created_at',since30).order('created_at',{ascending:false}).limit(50000);
+  if(error) return {error};
+  const rows=data||[], countSince=t=>rows.filter(x=>new Date(x.created_at)>=t).length, uniqueSince=t=>new Set(rows.filter(x=>new Date(x.created_at)>=t).map(x=>x.visitor_id)).size;
+  const [{count:totalVisits},{data:allUnique}]=await Promise.all([
+    supabase.from('site_visits').select('*',{count:'exact',head:true}),
+    supabase.from('site_visits').select('visitor_id').limit(50000)
+  ]);
+  return {today:countSince(today), todayUnique:uniqueSince(today), week:countSince(new Date(now-7*day)), weekUnique:uniqueSince(new Date(now-7*day)), month:rows.length, monthUnique:new Set(rows.map(x=>x.visitor_id)).size, total:totalVisits||0, totalUnique:new Set((allUnique||[]).map(x=>x.visitor_id)).size};
+}
+
 async function init(){
   bindUI();
   showSkeletons();
+  trackSiteVisit();
 
   // Recovery olayı sayfa açılır açılmaz gelebilir. Dinleyiciyi getSession'dan ÖNCE kuruyoruz.
   supabase.auth.onAuthStateChange(async (event,session)=>{
@@ -208,6 +238,23 @@ async function login(e){ e.preventDefault(); const email=$('#loginEmail').value.
 async function signup(e){ e.preventDefault(); const email=$('#signupEmail').value.trim(), password=$('#signupPassword').value, full_name=$('#signupName').value.trim(), phone=$('#signupPhone').value.trim(); const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name,phone}}}); if(error)return toast(error.message,'err'); if(!data.session){ const signed=await supabase.auth.signInWithPassword({email,password}); if(signed.error)return toast('Üyelik oluşturuldu. Şimdi giriş yapabilirsiniz.'); } if($('#authDialog').open) $('#authDialog').close(); e.target.reset(); toast('Üyeliğiniz başarıyla oluşturuldu. Giriş yapıldı.'); }
 async function forgotPassword(){ const email=$('#loginEmail').value.trim(); if(!email)return toast('Önce e-posta adresinizi yazın.','err'); const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:'https://uzmangayrimenkulcorlu.com/?reset=1'}); if(error)return toast(error.message,'err'); toast('Şifre yenileme bağlantısı e-postanıza gönderildi.'); }
 async function updatePassword(e){e.preventDefault();const a=$('#newPassword').value,b=$('#newPassword2').value;if(a!==b)return toast('Şifreler aynı değil.','err');const {error}=await supabase.auth.updateUser({password:a});if(error)return toast(error.message,'err');$('#resetPasswordDialog').close();e.target.reset();toast('Şifreniz güncellendi. Yeni şifrenizle giriş yapabilirsiniz.'); history.replaceState({},document.title,'/');}
+async function changePassword(e){
+  e.preventDefault();
+  if(!state.user?.email) return toast('Önce hesabınıza giriş yapın.','err');
+  const current=$('#currentPassword').value;
+  const next=$('#changeNewPassword').value;
+  const again=$('#changeNewPassword2').value;
+  if(next.length<6) return toast('Yeni şifre en az 6 karakter olmalı.','err');
+  if(next!==again) return toast('Yeni şifreler aynı değil.','err');
+  if(current===next) return toast('Yeni şifre mevcut şifreden farklı olmalı.','err');
+  const verify=await supabase.auth.signInWithPassword({email:state.user.email,password:current});
+  if(verify.error) return toast('Mevcut şifreniz yanlış.','err');
+  const {error}=await supabase.auth.updateUser({password:next});
+  if(error) return toast(error.message,'err');
+  e.target.reset();
+  toast('Şifreniz başarıyla değiştirildi.');
+}
+
 async function logout(){ await supabase.auth.signOut(); nav('home'); toast('Çıkış yapıldı.'); }
 async function saveProfile(e){ e.preventDefault(); if(!state.user)return; const payload={full_name:$('#profileName').value.trim(),phone:$('#profilePhone').value.trim(),company_name:$('#profileCompany').value.trim(),bio:$('#profileBio').value.trim()}; const {data,error}=await supabase.from('profiles').update(payload).eq('id',state.user.id).select().single(); if(error)return toast(error.message,'err'); state.profile=data; updateAuthUI(); toast('Profil güncellendi.'); }
 
@@ -292,7 +339,10 @@ async function loadAdmin(section='pending'){
   }
   if(section==='stats'){
     const activeListings=state.listings.filter(x=>x.status==='active'), views=activeListings.reduce((a,x)=>a+Number(x.view_count||0),0), favs=activeListings.reduce((a,x)=>a+Number(x.favorite_count||0),0);
-    $('#adminContent').innerHTML=`<div class="admin-stats"><div class="stat-card"><b>${views}</b><small>Toplam Görüntülenme</small></div><div class="stat-card"><b>${favs}</b><small>Favori</small></div><div class="stat-card"><b>${activeListings.length}</b><small>Aktif İlan</small></div><div class="stat-card"><b>${state.listings.filter(x=>x.is_featured&&x.status==='active').length}</b><small>Vitrin İlanı</small></div></div>`;
+    const visit=await loadVisitStats();
+    const visitCards=visit.error?`<div class="manage-row"><div><h3>Ziyaretçi verileri alınamadı</h3><p>${esc(visit.error.message||'')}</p></div></div>`:`<div class="admin-stats"><div class="stat-card"><b>${visit.today}</b><small>Bugünkü Ziyaret</small></div><div class="stat-card"><b>${visit.todayUnique}</b><small>Bugün Tekil Ziyaretçi</small></div><div class="stat-card"><b>${visit.week}</b><small>Son 7 Gün Ziyaret</small></div><div class="stat-card"><b>${visit.weekUnique}</b><small>7 Gün Tekil</small></div><div class="stat-card"><b>${visit.month}</b><small>Son 30 Gün Ziyaret</small></div><div class="stat-card"><b>${visit.monthUnique}</b><small>30 Gün Tekil</small></div><div class="stat-card"><b>${visit.total}</b><small>Toplam Ziyaret</small></div><div class="stat-card"><b>${visit.totalUnique}</b><small>Toplam Tekil Ziyaretçi</small></div></div>`;
+    const top=activeListings.slice().sort((a,b)=>Number(b.view_count||0)-Number(a.view_count||0)).slice(0,10);
+    $('#adminContent').innerHTML=`<h3>Site Ziyaretçileri</h3>${visitCards}<h3>İlan İstatistikleri</h3><div class="admin-stats"><div class="stat-card"><b>${views}</b><small>İlan Görüntülenmesi</small></div><div class="stat-card"><b>${favs}</b><small>Favori</small></div><div class="stat-card"><b>${activeListings.length}</b><small>Aktif İlan</small></div><div class="stat-card"><b>${state.listings.filter(x=>x.is_featured&&x.status==='active').length}</b><small>Vitrin İlanı</small></div></div><h3>En Çok Görüntülenen İlanlar</h3>${top.map((l,i)=>`<div class="manage-row"><div><h3>${i+1}. ${esc(l.title)}</h3><p>İlan No ${l.listing_no} • ${Number(l.view_count||0)} görüntülenme</p></div><button class="mini-btn" data-open-listing="${l.id}">Görüntüle</button></div>`).join('')||'<div class="empty-state">Henüz görüntülenme yok</div>'}`;
   }
   const [pending,active,users,reports]=await Promise.all([supabase.from('listings').select('*',{count:'exact',head:true}).eq('status','pending'),supabase.from('listings').select('*',{count:'exact',head:true}).eq('status','active'),supabase.from('profiles').select('*',{count:'exact',head:true}),supabase.from('reports').select('*',{count:'exact',head:true}).eq('status','open')]);
   $('#adminStats').innerHTML=[['Onay Bekleyen',pending.count||0],['Yayındaki İlan',active.count||0],['Üye',users.count||0],['Açık Şikayet',reports.count||0]].map(([k,v])=>`<div class="stat-card"><b>${v}</b><small>${k}</small></div>`).join('');
@@ -331,7 +381,7 @@ applyTheme(localStorage.getItem('uzman-emlak-theme')||'dark');
 function bindUI(){
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hidden')});
   $('#themeBtn').addEventListener('click',toggleTheme); $('#installBtn').addEventListener('click',installApp); $('#homeInstallBtn').addEventListener('click',installApp);
-  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=48').catch(console.warn);
+  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=50').catch(console.warn);
   document.addEventListener('click',async e=>{
     const close=e.target.closest('[data-close]'); if(close){close.closest('dialog').close();return;}
     const navBtn=e.target.closest('[data-nav]'); if(navBtn){nav(navBtn.dataset.nav);return;}
@@ -356,7 +406,7 @@ function bindUI(){
     const qdeal=e.target.closest('[data-deal-quick]'); if(qdeal){state.filters.deal=qdeal.dataset.dealQuick;$$('#dealTabs button').forEach(x=>x.classList.toggle('active',x.dataset.deal===state.filters.deal));renderListings();return;}
   });
   document.addEventListener('change',async e=>{ if(e.target.matches('[data-role-select]')) await changeUserRole(e.target.dataset.roleSelect,e.target.value); });
-  $('#authBtn').onclick=()=>openAuth(); $('#forgotPasswordBtn').onclick=forgotPassword; $('#resetPasswordForm').onsubmit=updatePassword; $('#feedbackForm').onsubmit=sendFeedback; $('#deleteAccountBtn').onclick=deleteMyAccount; $('#profilePhoto').onchange=e=>uploadProfilePhoto(e.target.files?.[0]); $('#userBtn').onclick=()=>nav('account'); $('#loginForm').onsubmit=login; $('#signupForm').onsubmit=signup; $('#logoutBtn').onclick=logout; $('#profileForm').onsubmit=saveProfile; $('#listingForm').onsubmit=e=>saveListing(e,'pending'); $('#saveDraftBtn').onclick=()=>saveListing(null,'draft'); $('#newListingBtn2').onclick=()=>openListingForm(); $('#floatingAddBtn').onclick=()=>openListingForm(); $('#lfCategory').onchange=toggleListingFields; $('#messageForm').onsubmit=sendMessage; $('#markAllReadBtn').onclick=markAllRead; $('#clearRecentBtn').onclick=clearRecent;
+  $('#authBtn').onclick=()=>openAuth(); $('#forgotPasswordBtn').onclick=forgotPassword; $('#resetPasswordForm').onsubmit=updatePassword; $('#changePasswordForm').onsubmit=changePassword; $('#feedbackForm').onsubmit=sendFeedback; $('#deleteAccountBtn').onclick=deleteMyAccount; $('#profilePhoto').onchange=e=>uploadProfilePhoto(e.target.files?.[0]); $('#userBtn').onclick=()=>nav('account'); $('#loginForm').onsubmit=login; $('#signupForm').onsubmit=signup; $('#logoutBtn').onclick=logout; $('#profileForm').onsubmit=saveProfile; $('#listingForm').onsubmit=e=>saveListing(e,'pending'); $('#saveDraftBtn').onclick=()=>saveListing(null,'draft'); $('#newListingBtn2').onclick=()=>openListingForm(); $('#floatingAddBtn').onclick=()=>openListingForm(); $('#lfCategory').onchange=toggleListingFields; $('#messageForm').onsubmit=sendMessage; $('#markAllReadBtn').onclick=markAllRead; $('#clearRecentBtn').onclick=clearRecent;
   $('#lfImages').onchange=()=>{const files=[...$('#lfImages').files].slice(0,12);$('#uploadPreview').innerHTML=files.map(f=>`<div class="upload-thumb"><img src="${URL.createObjectURL(f)}"></div>`).join('')};
   $$('#dealTabs button').forEach(b=>b.onclick=()=>{state.filters.deal=b.dataset.deal;$$('#dealTabs button').forEach(x=>x.classList.toggle('active',x===b));renderListings()});
   $('#searchBtn').onclick=()=>{state.filters.q=$('#searchInput').value.trim();renderListings()}; $('#searchInput').onkeydown=e=>{if(e.key==='Enter'){$('#searchBtn').click()}};

@@ -2,6 +2,7 @@
   "name": "Uzman Emlak",
   "short_name": "Uzman Emlak",
   "description": "Uzman Emlak - Türkiye geneli gayrimenkul ilan platformu",
+  "id": "/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

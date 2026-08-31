@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0c" />
   <meta name="description" content="Uzman Emlak - Türkiye genelinde satılık, kiralık, arsa, işyeri ve kat karşılığı gayrimenkul ilanları." />
-  <link rel="manifest" href="manifest.json?v=44" />
+  <link rel="manifest" href="manifest.json?v=45" />
   <link rel="icon" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="stylesheet" href="style.css?v=44" />
+  <link rel="stylesheet" href="style.css?v=45" />
   <title>Uzman Emlak</title>
 </head>
 <body>
@@ -74,7 +74,7 @@
         <button data-cat="Arsa"><span>⌂</span><b>Arsa</b><small>Yatırımlık parseller</small></button>
         <button data-cat="Konut"><span>▦</span><b>Konut</b><small>Daire & villa</small></button>
         <button data-cat="İşyeri"><span>▤</span><b>İşyeri</b><small>Dükkan & ofis</small></button>
-        <button data-deal-quick="land_share"><span>◇</span><b>Kat Karşılığı</b><small>Proje fırsatları</small></button>
+        <button data-deal-quick="land_share"><span>◇</span><b>Kat Karşılığı</b><small>Arsa geliştirme fırsatları</small></button>
       </section>
 
       <section class="shell section-head">
@@ -149,7 +149,7 @@
   </nav>
 
   <dialog id="listingDialog" class="modal listing-modal"><button class="modal-close" data-close>×</button><div id="listingDetail"></div></dialog>
-  <dialog id="authDialog" class="modal auth-modal"><button class="modal-close" data-close>×</button><div class="auth-brand"><div class="brand-mark">UE</div><h2>Uzman Emlak</h2><p>Üyelik oluşturun veya hesabınıza giriş yapın.</p></div><div class="auth-tabs"><button class="active" data-auth-tab="login">Giriş Yap</button><button data-auth-tab="signup">Üye Ol</button></div><form id="loginForm" class="auth-form"><label>E-posta<input id="loginEmail" type="email" required /></label><label>Şifre<input id="loginPassword" type="password" minlength="6" required /></label><button class="gold-btn">Giriş Yap</button></form><form id="signupForm" class="auth-form hidden"><label>Ad Soyad<input id="signupName" required /></label><label>E-posta<input id="signupEmail" type="email" required /></label><label>Şifre<input id="signupPassword" type="password" minlength="6" required /></label><label>Telefon<input id="signupPhone" inputmode="tel" /></label><button class="gold-btn">Üye Ol</button><small>Üyeliğiniz oluşturulduğunda otomatik giriş yapılır.</small></form></dialog>
+  <dialog id="authDialog" class="modal auth-modal"><button class="modal-close" data-close>×</button><div class="auth-brand"><h2>Uzman Emlak</h2><p>Üyelik oluşturun veya hesabınıza giriş yapın.</p></div><div class="auth-tabs"><button class="active" data-auth-tab="login">Giriş Yap</button><button data-auth-tab="signup">Üye Ol</button></div><form id="loginForm" class="auth-form"><label>E-posta<input id="loginEmail" type="email" required /></label><label>Şifre<input id="loginPassword" type="password" minlength="6" required /></label><button class="gold-btn">Giriş Yap</button></form><form id="signupForm" class="auth-form hidden"><label>Ad Soyad<input id="signupName" required /></label><label>E-posta<input id="signupEmail" type="email" required /></label><label>Şifre<input id="signupPassword" type="password" minlength="6" required /></label><label>Telefon<input id="signupPhone" inputmode="tel" /></label><button class="gold-btn">Üye Ol</button><small>Üyeliğiniz oluşturulduğunda otomatik giriş yapılır.</small></form></dialog>
 
   <dialog id="listingFormDialog" class="modal form-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">PORTFÖY</div><h2 id="listingFormTitle">Yeni İlan Ver</h2><p>Bilgileri eksiksiz girin. Yeni ilanlar yönetici onayına gönderilir.</p></div><form id="listingForm" class="form-grid listing-form"><input id="editListingId" type="hidden" />
     <label class="full">İlan Başlığı<input id="lfTitle" maxlength="120" required placeholder="Örn. Önerler'de Yatırımlık Ticari Arsa" /></label>
@@ -171,6 +171,6 @@
 
   <dialog id="filterDialog" class="modal filter-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">DETAYLI ARAMA</div><h2>Filtreler</h2></div><div class="form-grid"><label>Min. Fiyat<input id="fMinPrice" type="number" min="0" /></label><label>Maks. Fiyat<input id="fMaxPrice" type="number" min="0" /></label><label>Min. m²<input id="fMinM2" type="number" min="0" /></label><label>Maks. m²<input id="fMaxM2" type="number" min="0" /></label><label>Oda Sayısı<input id="fRooms" placeholder="3+1" /></label><label>Isıtma<input id="fHeating" placeholder="Kombi" /></label><label>Ada<input id="fAda" /></label><label>Parsel<input id="fParsel" /></label><div class="full form-actions"><button id="applyAdvancedFilter" class="gold-btn">Filtrele</button></div></div></dialog>
 
-  <script type="module" src="app.js?v=44"></script>
+  <script type="module" src="app.js?v=45"></script>
 </body>
 </html>

@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0c" />
   <meta name="description" content="Uzman Emlak - Türkiye genelinde satılık, kiralık, arsa, işyeri, proje ve kat karşılığı gayrimenkul ilanları." />
-  <link rel="manifest" href="manifest.json?v=42" />
+  <link rel="manifest" href="manifest.json?v=43" />
   <link rel="icon" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="stylesheet" href="style.css?v=42" />
+  <link rel="stylesheet" href="style.css?v=43" />
   <title>Uzman Emlak</title>
 </head>
 <body>
@@ -20,6 +20,7 @@
       <div><strong>UZMAN <span>EMLAK</span></strong><small>Gayrimenkul Platformu</small></div>
     </div>
     <div class="top-actions">
+      <button id="themeBtn" class="ghost-btn theme-btn" type="button" aria-label="Tema değiştir">☀️ Aydınlık</button>
       <button id="installBtn" class="ghost-btn hidden">Uygulamayı Yükle</button>
       <button id="authBtn" class="gold-btn">Giriş Yap</button>
       <button id="userBtn" class="avatar-btn hidden" aria-label="Hesabım">U</button>
@@ -29,6 +30,7 @@
   <main id="app">
     <section id="homeView" class="view active-view">
       <section class="hero shell">
+        <div class="site-cover"><img src="uzman-emlak-kapak.png" alt="Uzman Emlak kapak görseli" fetchpriority="high"></div>
         <div class="hero-copy">
           <div class="eyebrow">TÜRKİYE GENELİ • GÜVENİLİR EMLAK PLATFORMU</div>
           <h1>Türkiye’nin her yerindeki gayrimenkulleri <span>tek yerde</span> keşfedin.</h1>
@@ -66,6 +68,11 @@
         </div>
       </section>
 
+      <section class="install-strip shell">
+        <div><b>Uzman Emlak cebinizde</b><small>İlanlara daha hızlı ulaşmak için uygulamayı ana ekranınıza ekleyin.</small></div>
+        <button id="homeInstallBtn" class="gold-btn">📲 Uygulamayı Telefona Ekle</button>
+      </section>
+
       <section class="quick-cats shell" id="quickCats">
         <button data-cat="Arsa"><span>⌂</span><b>Arsa</b><small>Yatırımlık parseller</small></button>
         <button data-cat="Konut"><span>▦</span><b>Konut</b><small>Daire & villa</small></button>
@@ -84,6 +91,7 @@
         <div id="listingEmpty" class="empty-state hidden"><div>⌕</div><h3>İlan bulunamadı</h3><p>Filtreleri değiştirip tekrar deneyin.</p></div>
         <div id="listingLoading" class="skeleton-grid"></div>
       </section>
+      <section id="recentSection" class="shell recent-section hidden"><div class="section-head inner"><div><div class="eyebrow">GEÇMİŞ</div><h2>Son Baktıklarım</h2></div><button id="clearRecentBtn" class="text-btn">Temizle</button></div><div id="recentGrid" class="listing-grid compact-grid"></div></section>
     </section>
 
     <section id="favoritesView" class="view shell">
@@ -127,7 +135,7 @@
           <section id="notificationsTab" class="account-tab"><div class="tab-toolbar"><div><h2>Bildirimler</h2><p>İlan ve mesaj hareketleri.</p></div><button id="markAllReadBtn" class="ghost-btn">Tümünü okundu yap</button></div><div id="notificationList" class="notification-list"></div></section>
           <section id="adminTab" class="account-tab">
             <div class="admin-stats" id="adminStats"></div>
-            <div class="admin-tabs"><button class="active" data-admin-section="pending">Onay Bekleyen</button><button data-admin-section="all">Tüm İlanlar</button><button data-admin-section="users">Üyeler</button><button data-admin-section="reports">Şikayetler</button></div>
+            <div class="admin-tabs"><button class="active" data-admin-section="pending">Onay Bekleyen</button><button data-admin-section="all">Tüm İlanlar</button><button data-admin-section="users">Üyeler</button><button data-admin-section="reports">Şikayetler</button><button data-admin-section="status">Sistem Durumu</button><button data-admin-section="audit">Yönetici Kayıtları</button><button data-admin-section="stats">İstatistikler</button></div>
             <div id="adminContent" class="manage-list"></div>
           </section>
         </div>
@@ -146,7 +154,7 @@
   </nav>
 
   <dialog id="listingDialog" class="modal listing-modal"><button class="modal-close" data-close>×</button><div id="listingDetail"></div></dialog>
-  <dialog id="authDialog" class="modal auth-modal"><button class="modal-close" data-close>×</button><div class="auth-brand"><div class="brand-mark">UE</div><h2>Uzman Emlak</h2><p>Üyelik oluşturun veya hesabınıza giriş yapın.</p></div><div class="auth-tabs"><button class="active" data-auth-tab="login">Giriş Yap</button><button data-auth-tab="signup">Üye Ol</button></div><form id="loginForm" class="auth-form"><label>E-posta<input id="loginEmail" type="email" required /></label><label>Şifre<input id="loginPassword" type="password" minlength="6" required /></label><button class="gold-btn">Giriş Yap</button></form><form id="signupForm" class="auth-form hidden"><label>Ad Soyad<input id="signupName" required /></label><label>E-posta<input id="signupEmail" type="email" required /></label><label>Şifre<input id="signupPassword" type="password" minlength="6" required /></label><label>Telefon<input id="signupPhone" inputmode="tel" /></label><button class="gold-btn">Üye Ol</button><small>Üyelik sonrası e-posta doğrulaması istenebilir.</small></form></dialog>
+  <dialog id="authDialog" class="modal auth-modal"><button class="modal-close" data-close>×</button><div class="auth-brand"><div class="brand-mark">UE</div><h2>Uzman Emlak</h2><p>Üyelik oluşturun veya hesabınıza giriş yapın.</p></div><div class="auth-tabs"><button class="active" data-auth-tab="login">Giriş Yap</button><button data-auth-tab="signup">Üye Ol</button></div><form id="loginForm" class="auth-form"><label>E-posta<input id="loginEmail" type="email" required /></label><label>Şifre<input id="loginPassword" type="password" minlength="6" required /></label><button class="gold-btn">Giriş Yap</button></form><form id="signupForm" class="auth-form hidden"><label>Ad Soyad<input id="signupName" required /></label><label>E-posta<input id="signupEmail" type="email" required /></label><label>Şifre<input id="signupPassword" type="password" minlength="6" required /></label><label>Telefon<input id="signupPhone" inputmode="tel" /></label><button class="gold-btn">Üye Ol</button><small>Üyeliğiniz oluşturulduğunda otomatik giriş yapılır.</small></form></dialog>
 
   <dialog id="listingFormDialog" class="modal form-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">PORTFÖY</div><h2 id="listingFormTitle">Yeni İlan Ver</h2><p>Bilgileri eksiksiz girin. Yeni ilanlar yönetici onayına gönderilir.</p></div><form id="listingForm" class="form-grid listing-form"><input id="editListingId" type="hidden" />
     <label class="full">İlan Başlığı<input id="lfTitle" maxlength="120" required placeholder="Örn. Önerler'de Yatırımlık Ticari Arsa" /></label>
@@ -168,6 +176,6 @@
 
   <dialog id="filterDialog" class="modal filter-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">DETAYLI ARAMA</div><h2>Filtreler</h2></div><div class="form-grid"><label>Min. Fiyat<input id="fMinPrice" type="number" min="0" /></label><label>Maks. Fiyat<input id="fMaxPrice" type="number" min="0" /></label><label>Min. m²<input id="fMinM2" type="number" min="0" /></label><label>Maks. m²<input id="fMaxM2" type="number" min="0" /></label><label>Oda Sayısı<input id="fRooms" placeholder="3+1" /></label><label>Isıtma<input id="fHeating" placeholder="Kombi" /></label><label>Ada<input id="fAda" /></label><label>Parsel<input id="fParsel" /></label><div class="full form-actions"><button id="applyAdvancedFilter" class="gold-btn">Filtrele</button></div></div></dialog>
 
-  <script type="module" src="app.js?v=42"></script>
+  <script type="module" src="app.js?v=43"></script>
 </body>
 </html>

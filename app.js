@@ -70,7 +70,7 @@ async function loadListings(){
   }
   state.listings=listings;
   $('#listingLoading').innerHTML='';
-  refreshNeighborhoods(); renderListings();
+  refreshNeighborhoods(); renderListings(); renderRecent();
 }
 
 function refreshNeighborhoods(){
@@ -119,10 +119,20 @@ function listingCard(l){
     </div></article>`;
 }
 
+const RECENT_KEY='uzman-emlak-recent-v1';
+function getRecentIds(){try{return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]')}catch{return []}}
+function addRecent(id){const ids=[id,...getRecentIds().filter(x=>x!==id)].slice(0,8);localStorage.setItem(RECENT_KEY,JSON.stringify(ids));renderRecent()}
+function renderRecent(){const ids=getRecentIds();const arr=ids.map(id=>state.listings.find(x=>x.id===id)).filter(x=>x&&x.status==='active');const sec=$('#recentSection');if(!sec)return;sec.classList.toggle('hidden',!arr.length);$('#recentGrid').innerHTML=arr.map(listingCard).join('')}
+function clearRecent(){localStorage.removeItem(RECENT_KEY);renderRecent();}
+function isIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent)}
+function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}
+function installApp(){if(isStandalone())return toast('Uzman Emlak zaten ana ekranınızda.');if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.finally(()=>{deferredInstall=null;$('#installBtn').classList.add('hidden')});return;}if(isIOS())return toast('iPhone: Paylaş → Ana Ekrana Ekle → Ekle');toast('Tarayıcı menüsünden “Ana ekrana ekle / Uygulamayı yükle” seçeneğini kullanabilirsiniz.');}
+
 async function openListing(id){
   let l=state.listings.find(x=>x.id===id);
   if(!l){ const {data}=await supabase.from('listings').select('*').eq('id',id).single(); l=data; }
   if(!l) return;
+  addRecent(id);
   const imgs=l.images||[]; const hero=imgs.find(x=>x.is_cover)?.image_url||imgs[0]?.image_url;
   const details=[['İşlem',dealLabels[l.deal]],['Kategori',l.category],['Alt Kategori',l.subcategory],['Brüt m²',l.gross_m2?`${fmt.format(Number(l.gross_m2))} m²`:null],['Net m²',l.net_m2?`${fmt.format(Number(l.net_m2))} m²`:null],['Oda',l.room_count],['Kat',l.floor],['Isıtma',l.heating],['Ada',l.ada],['Parsel',l.parsel],['İmar',l.zoning],['Emsal',l.emsal],['Hmax',l.hmax]].filter(x=>x[1]);
   const phone=l.contact_phone||'05061347675';
@@ -233,6 +243,18 @@ async function loadAdmin(section='pending'){
   let data=[]; if(['pending','all'].includes(section)){ const r=await query; data=r.data||[]; $('#adminContent').innerHTML=data.map(adminListingRow).join('')||'<div class="empty-state"><div>✓</div><h3>Kayıt yok</h3></div>'; }
   if(section==='users'){ const r=await supabase.from('profiles').select('*').order('created_at',{ascending:false}); data=r.data||[]; $('#adminContent').innerHTML=data.map(adminUserRow).join('')||'<div class="empty-state">Üye yok</div>'; }
   if(section==='reports'){ const r=await supabase.from('reports').select('*').order('created_at',{ascending:false}); data=r.data||[]; $('#adminContent').innerHTML=data.map(x=>`<div class="manage-row"><div><h3>${esc(x.reason)} ${statusBadge(x.status)}</h3><p>${esc(x.details||'')} • ${new Date(x.created_at).toLocaleString('tr-TR')}</p></div><div class="manage-actions"><button class="mini-btn ok" data-report-status="${x.id}|resolved">Çözüldü</button><button class="mini-btn" data-report-status="${x.id}|closed">Kapat</button></div></div>`).join('')||'<div class="empty-state">Şikayet yok</div>'; }
+  if(section==='status'){
+    const [msgs,allListings,allUsers,allReports]=await Promise.all([supabase.from('messages').select('*',{count:'exact',head:true}),supabase.from('listings').select('*',{count:'exact',head:true}),supabase.from('profiles').select('*',{count:'exact',head:true}),supabase.from('reports').select('*',{count:'exact',head:true})]);
+    $('#adminContent').innerHTML=`<div class="admin-stats"><div class="stat-card"><b>${allUsers.count||0}</b><small>Toplam Üye</small></div><div class="stat-card"><b>${allListings.count||0}</b><small>Toplam İlan</small></div><div class="stat-card"><b>${msgs.count||0}</b><small>Mesaj</small></div><div class="stat-card"><b>${allReports.count||0}</b><small>Şikayet / Rapor</small></div></div>`;
+  }
+  if(section==='audit'){
+    const r=await supabase.from('admin_audit_log').select('*').order('created_at',{ascending:false}).limit(100); const a=r.data||[];
+    $('#adminContent').innerHTML=a.map(x=>`<div class="manage-row"><div><h3>${esc(x.action||'Yönetici işlemi')}</h3><p>${esc(x.entity_type||x.table_name||'Kayıt')} ${esc(x.entity_id||x.record_id||'')} • ${new Date(x.created_at).toLocaleString('tr-TR')}</p></div></div>`).join('')||'<div class="empty-state"><h3>Henüz yönetici kaydı yok</h3></div>';
+  }
+  if(section==='stats'){
+    const activeListings=state.listings.filter(x=>x.status==='active'), views=activeListings.reduce((a,x)=>a+Number(x.view_count||0),0), favs=activeListings.reduce((a,x)=>a+Number(x.favorite_count||0),0);
+    $('#adminContent').innerHTML=`<div class="admin-stats"><div class="stat-card"><b>${views}</b><small>Toplam Görüntülenme</small></div><div class="stat-card"><b>${favs}</b><small>Favori</small></div><div class="stat-card"><b>${activeListings.length}</b><small>Aktif İlan</small></div><div class="stat-card"><b>${state.listings.filter(x=>x.is_featured&&x.status==='active').length}</b><small>Vitrin İlanı</small></div></div>`;
+  }
   const [pending,active,users,reports]=await Promise.all([supabase.from('listings').select('*',{count:'exact',head:true}).eq('status','pending'),supabase.from('listings').select('*',{count:'exact',head:true}).eq('status','active'),supabase.from('profiles').select('*',{count:'exact',head:true}),supabase.from('reports').select('*',{count:'exact',head:true}).eq('status','open')]);
   $('#adminStats').innerHTML=[['Onay Bekleyen',pending.count||0],['Yayındaki İlan',active.count||0],['Üye',users.count||0],['Açık Şikayet',reports.count||0]].map(([k,v])=>`<div class="stat-card"><b>${v}</b><small>${k}</small></div>`).join('');
 }
@@ -256,10 +278,21 @@ function accountTab(tab){ $$('.account-sidebar button').forEach(b=>b.classList.t
 function setupRealtime(){ state.realtime.forEach(c=>supabase.removeChannel(c)); state.realtime=[]; if(!state.user)return; const m=supabase.channel(`messages-${state.user.id}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{ if(state.activeConversation===payload.new.conversation_id)openConversation(state.activeConversation); loadConversations(); }).subscribe(); const n=supabase.channel(`notifications-${state.user.id}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:`user_id=eq.${state.user.id}`},payload=>{toast(payload.new.title||'Yeni bildirim');loadNotifications();}).subscribe(); state.realtime=[m,n]; }
 
 let deferredInstall=null;
+function applyTheme(theme){
+  const selected=theme==='light'?'light':'dark';
+  document.documentElement.dataset.theme=selected;
+  localStorage.setItem('uzman-emlak-theme',selected);
+  const btn=document.getElementById('themeBtn');
+  if(btn) btn.textContent=selected==='dark'?'☀️ Aydınlık':'🌙 Karanlık';
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content',selected==='dark'?'#071015':'#f5f3ee');
+}
+function toggleTheme(){ applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light'); }
+applyTheme(localStorage.getItem('uzman-emlak-theme')||'dark');
 function bindUI(){
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hidden')});
-  $('#installBtn').addEventListener('click',async()=>{if(deferredInstall){deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('#installBtn').classList.add('hidden')}});
-  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=42').catch(console.warn);
+  $('#themeBtn').addEventListener('click',toggleTheme); $('#installBtn').addEventListener('click',installApp); $('#homeInstallBtn').addEventListener('click',installApp);
+  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=43').catch(console.warn);
   document.addEventListener('click',async e=>{
     const close=e.target.closest('[data-close]'); if(close){close.closest('dialog').close();return;}
     const navBtn=e.target.closest('[data-nav]'); if(navBtn){nav(navBtn.dataset.nav);return;}
@@ -283,7 +316,7 @@ function bindUI(){
     const qdeal=e.target.closest('[data-deal-quick]'); if(qdeal){state.filters.deal=qdeal.dataset.dealQuick;$$('#dealTabs button').forEach(x=>x.classList.toggle('active',x.dataset.deal===state.filters.deal));renderListings();return;}
   });
   document.addEventListener('change',async e=>{ if(e.target.matches('[data-role-select]')) await changeUserRole(e.target.dataset.roleSelect,e.target.value); });
-  $('#authBtn').onclick=()=>openAuth(); $('#userBtn').onclick=()=>nav('account'); $('#loginForm').onsubmit=login; $('#signupForm').onsubmit=signup; $('#logoutBtn').onclick=logout; $('#profileForm').onsubmit=saveProfile; $('#listingForm').onsubmit=e=>saveListing(e,'pending'); $('#saveDraftBtn').onclick=()=>saveListing(null,'draft'); $('#newListingBtn2').onclick=()=>openListingForm(); $('#floatingAddBtn').onclick=()=>openListingForm(); $('#lfCategory').onchange=toggleListingFields; $('#messageForm').onsubmit=sendMessage; $('#markAllReadBtn').onclick=markAllRead;
+  $('#authBtn').onclick=()=>openAuth(); $('#userBtn').onclick=()=>nav('account'); $('#loginForm').onsubmit=login; $('#signupForm').onsubmit=signup; $('#logoutBtn').onclick=logout; $('#profileForm').onsubmit=saveProfile; $('#listingForm').onsubmit=e=>saveListing(e,'pending'); $('#saveDraftBtn').onclick=()=>saveListing(null,'draft'); $('#newListingBtn2').onclick=()=>openListingForm(); $('#floatingAddBtn').onclick=()=>openListingForm(); $('#lfCategory').onchange=toggleListingFields; $('#messageForm').onsubmit=sendMessage; $('#markAllReadBtn').onclick=markAllRead; $('#clearRecentBtn').onclick=clearRecent;
   $('#lfImages').onchange=()=>{const files=[...$('#lfImages').files].slice(0,12);$('#uploadPreview').innerHTML=files.map(f=>`<div class="upload-thumb"><img src="${URL.createObjectURL(f)}"></div>`).join('')};
   $$('#dealTabs button').forEach(b=>b.onclick=()=>{state.filters.deal=b.dataset.deal;$$('#dealTabs button').forEach(x=>x.classList.toggle('active',x===b));renderListings()});
   $('#searchBtn').onclick=()=>{state.filters.q=$('#searchInput').value.trim();renderListings()}; $('#searchInput').onkeydown=e=>{if(e.key==='Enter'){$('#searchBtn').click()}};

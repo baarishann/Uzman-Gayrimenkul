@@ -1,5 +1,5 @@
-const CACHE='uzman-emlak-v42';
-const CORE=['./','./index.html','./style.css?v=42','./app.js?v=42','./manifest.json?v=42','./icon-192.png','./icon-512.png'];
+const CACHE='uzman-emlak-v43-theme';
+const CORE=['./','./index.html','./style.css?v=43','./app.js?v=43','./manifest.json?v=43','./icon-192.png','./icon-512.png','./uzman-emlak-kapak.png','./CNAME'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{

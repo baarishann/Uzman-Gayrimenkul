@@ -23,3 +23,5 @@ body{background:radial-gradient(circle at 85% 5%,rgba(44,143,151,.16),transparen
 :root[data-theme="light"] .bubble{background:#eeeae1}:root[data-theme="light"] .bubble.mine{background:#f3e5bd;border-color:#d6b96d}
 .theme-btn{white-space:nowrap}
 @media(max-width:620px){.top-actions .theme-btn{display:inline-flex!important;padding:9px 10px;font-size:0}.top-actions .theme-btn::first-letter{font-size:17px}}
+
+.sender-name{display:block;margin-bottom:5px;font-size:.78rem;font-weight:800;opacity:.82}

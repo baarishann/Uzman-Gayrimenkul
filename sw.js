@@ -1,5 +1,5 @@
-const CACHE='uzman-emlak-v50';
-const CORE=['./style.css?v=50','./app.js?v=50','./manifest.json?v=50','./uzman-emlak-icon-v47-192.png','./uzman-emlak-icon-v47-512.png','./uzman-emlak-icon-v47-1024.png'];
+const CACHE='uzman-emlak-v51';
+const CORE=['./style.css?v=51','./app.js?v=51','./manifest.json?v=51','./uzman-emlak-icon-v47-192.png','./uzman-emlak-icon-v47-512.png','./uzman-emlak-icon-v47-1024.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{

@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0c" />
   <meta name="description" content="Uzman Emlak - Türkiye genelinde satılık, kiralık, arsa, işyeri ve kat karşılığı gayrimenkul ilanları." />
-  <link rel="manifest" href="manifest.json?v=50" />
+  <link rel="manifest" href="manifest.json?v=51" />
   <link rel="icon" href="uzman-emlak-icon-v46-192.png" />
   <link rel="apple-touch-icon" href="uzman-emlak-icon-v46-192.png" />
-  <link rel="stylesheet" href="style.css?v=50" />
+  <link rel="stylesheet" href="style.css?v=51" />
   <title>Uzman Emlak</title>
 </head>
 <body>
@@ -16,7 +16,7 @@
 
   <header class="topbar">
     <div class="brand" data-nav="home" role="button" tabindex="0">
-      <div><strong>UZMAN <span>EMLAK</span></strong><small>Gayrimenkul Platformu</small></div>
+      <div><strong>UZMAN <span>EMLAK</span></strong><small>Emlakçı CRM & Portföy Yönetimi</small></div>
     </div>
     <div class="top-actions">
       <button id="themeBtn" class="ghost-btn theme-btn" type="button" aria-label="Tema değiştir">☀️ Aydınlık</button>
@@ -27,67 +27,16 @@
   </header>
 
   <main id="app">
-    <section id="homeView" class="view active-view">
-      <section class="hero shell">
-        <div class="hero-copy">
-          <div class="eyebrow">TÜRKİYE GENELİ • GÜVENİLİR EMLAK PLATFORMU</div>
-          <h1>Türkiye’nin her yerindeki gayrimenkulleri <span>tek yerde</span> keşfedin.</h1>
-          <p>81 ilde satılık, kiralık, arsa, konut, işyeri ve kat karşılığı ilanları gelişmiş filtrelerle keşfedin; ilan verin, favorileyin ve doğrudan iletişime geçin.</p>
-        </div>
-        <div class="hero-search">
-          <div class="search-tabs" id="dealTabs">
-            <button class="active" data-deal="all">Tümü</button>
-            <button data-deal="sale">Satılık</button>
-            <button data-deal="rent">Kiralık</button>
-            <button data-deal="land_share">Kat Karşılığı</button>
-          </div>
-          <div class="search-line">
-            <input id="searchInput" type="search" placeholder="İlan no, mahalle, ilan başlığı, ada/parsel..." />
-            <button id="searchBtn" class="gold-btn">Ara</button>
-          </div>
-          <div class="filter-row">
-            <select id="categoryFilter">
-              <option value="all">Tüm Kategoriler</option>
-              <option value="Konut">Konut</option>
-              <option value="Arsa">Arsa</option>
-              <option value="İşyeri">İşyeri</option>
-            </select>
-            <select id="neighborhoodFilter"><option value="all">Tüm Mahalleler</option></select>
-            <select id="sortFilter">
-              <option value="new">En Yeni</option>
-              <option value="priceAsc">Fiyat Artan</option>
-              <option value="priceDesc">Fiyat Azalan</option>
-              <option value="m2Desc">m² Büyükten Küçüğe</option>
-            </select>
-            <button id="advancedFilterBtn" class="ghost-btn">Detaylı Filtre</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="install-strip shell">
-        <div><b>Uzman Emlak cebinizde</b><small>İlanlara daha hızlı ulaşmak için uygulamayı ana ekranınıza ekleyin.</small></div>
-        <button id="homeInstallBtn" class="gold-btn">📲 Uygulamayı Telefona Ekle</button>
-      </section>
-
-      <section class="quick-cats shell" id="quickCats">
-        <button data-cat="Arsa"><span>⌂</span><b>Arsa</b><small>Yatırımlık parseller</small></button>
-        <button data-cat="Konut"><span>▦</span><b>Konut</b><small>Daire & villa</small></button>
-        <button data-cat="İşyeri"><span>▤</span><b>İşyeri</b><small>Dükkan & ofis</small></button>
-        <button data-deal-quick="land_share"><span>◇</span><b>Kat Karşılığı</b><small>Arsa geliştirme fırsatları</small></button>
-      </section>
-
-      <section class="shell section-head">
-        <div><div class="eyebrow">GÜNCEL PORTFÖY</div><h2>Öne çıkan ilanlar</h2></div>
-        <button id="clearFiltersBtn" class="text-btn">Filtreleri temizle</button>
-      </section>
-      <section class="shell">
-        <div id="listingGrid" class="listing-grid"></div>
-        <div id="listingEmpty" class="empty-state hidden"><div>⌕</div><h3>İlan bulunamadı</h3><p>Filtreleri değiştirip tekrar deneyin.</p></div>
-        <div id="listingLoading" class="skeleton-grid"></div>
-      </section>
-      <section id="recentSection" class="shell recent-section hidden"><div class="section-head inner"><div><div class="eyebrow">GEÇMİŞ</div><h2>Son Baktıklarım</h2></div><button id="clearRecentBtn" class="text-btn">Temizle</button></div><div id="recentGrid" class="listing-grid compact-grid"></div></section>
-    </section>
-
+    <section id="homeView" class="view active-view"><div class="crm-shell">
+      <div class="crm-welcome"><div><div class="eyebrow">UZMAN EMLAK PRO • CRM</div><h1>İşini tek ekrandan yönet.</h1><p>Müşteriler, portföyler, takipler ve eşleşmeler tek yerde.</p></div><button class="gold-btn" data-crm-open="client">+ Müşteri Ekle</button></div>
+      <div class="crm-kpis"><div class="crm-kpi"><b id="crmClientCount">0</b><small>Toplam Müşteri</small></div><div class="crm-kpi"><b id="crmHotCount">0</b><small>Sıcak Müşteri</small></div><div class="crm-kpi"><b id="crmTaskCount">0</b><small>Bekleyen Takip</small></div><div class="crm-kpi"><b id="crmMatchCount">0</b><small>Potansiyel Eşleşme</small></div></div>
+      <div class="crm-grid"><div class="crm-card"><h2>Hızlı İşlemler</h2><div class="crm-actions"><button class="crm-action" data-crm-open="client"><span>👤</span><b>Müşteri Ekle</b><small>Alıcı / satıcı kaydet</small></button><button class="crm-action" data-nav="account" data-account-jump="listings"><span>🏠</span><b>Portföyler</b><small>İlanlarını yönet</small></button><button class="crm-action" data-crm-open="task"><span>✓</span><b>Takip Ekle</b><small>Arama ve görev oluştur</small></button><button class="crm-action" data-crm-open="matches"><span>⚡</span><b>Akıllı Eşleşme</b><small>Müşteriye portföy bul</small></button><button class="crm-action" data-crm-open="pipeline"><span>📈</span><b>Satış Hunisi</b><small>Sıcak fırsatları gör</small></button><button class="crm-action" data-crm-open="commission"><span>₺</span><b>Komisyon</b><small>Kazanç hesabı</small></button></div></div>
+      <div class="crm-card"><h2>Bugünkü Takipler</h2><div id="crmTodayTasks" class="crm-list"></div></div>
+      <div class="crm-card"><h2>Son Müşteriler</h2><div id="crmRecentClients" class="crm-list"></div></div>
+      <div class="crm-card"><h2>Akıllı Özet</h2><div id="crmInsight" class="crm-list"></div></div></div>
+    </div></section>
+    <section id="clientsView" class="view"><div class="crm-shell"><div class="crm-page-head"><div><div class="eyebrow">MÜŞTERİ YÖNETİMİ</div><h1>Müşteriler</h1></div><button class="gold-btn" data-crm-open="client">+ Yeni Müşteri</button></div><div id="crmClientsList" class="crm-list"></div></div></section>
+    <section id="tasksView" class="view"><div class="crm-shell"><div class="crm-page-head"><div><div class="eyebrow">GÜNLÜK PLAN</div><h1>Takip & Görevler</h1></div><button class="gold-btn" data-crm-open="task">+ Takip Ekle</button></div><div id="crmTasksList" class="crm-list"></div></div></section>
     <section id="favoritesView" class="view shell">
       <div class="page-title"><div><div class="eyebrow">HESABIM</div><h1>Favorilerim</h1></div></div>
       <div id="favoritesGrid" class="listing-grid"></div>
@@ -140,10 +89,10 @@
   <button id="floatingAddBtn" class="floating-add">+ İlan Ver</button>
 
   <nav class="bottom-nav">
-    <button class="active" data-nav="home"><span>⌂</span>Ana Sayfa</button>
-    <button data-nav="favorites"><span>♡</span>Favoriler</button>
-    <button data-nav="add"><span class="nav-add">+</span>İlan Ver</button>
-    <button data-nav="messages"><span>✉</span>Mesajlar</button>
+    <button class="active" data-nav="home"><span>⌂</span>Panel</button>
+    <button data-nav="clients"><span>♙</span>Müşteriler</button>
+    <button data-nav="add"><span class="nav-add">+</span>Portföy</button>
+    <button data-nav="tasks"><span>✓</span>Takipler</button>
     <button data-nav="account"><span>◎</span>Hesabım</button>
   </nav>
 
@@ -171,6 +120,9 @@
 
   <dialog id="filterDialog" class="modal filter-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">DETAYLI ARAMA</div><h2>Filtreler</h2></div><div class="form-grid"><label>Min. Fiyat<input id="fMinPrice" type="number" min="0" /></label><label>Maks. Fiyat<input id="fMaxPrice" type="number" min="0" /></label><label>Min. m²<input id="fMinM2" type="number" min="0" /></label><label>Maks. m²<input id="fMaxM2" type="number" min="0" /></label><label>Oda Sayısı<input id="fRooms" placeholder="3+1" /></label><label>Isıtma<input id="fHeating" placeholder="Kombi" /></label><label>Ada<input id="fAda" /></label><label>Parsel<input id="fParsel" /></label><div class="full form-actions"><button id="applyAdvancedFilter" class="gold-btn">Filtrele</button></div></div></dialog>
 
-  <script type="module" src="app.js?v=50"></script>
+  <script type="module" src="app.js?v=49"></script>
+
+<dialog id="crmClientDialog"><form method="dialog" class="dialog-head"><b>Yeni Müşteri</b><button>✕</button></form><form id="crmClientForm" class="crm-form dialog-body"><label>Ad Soyad<input id="ccName" required></label><label>Telefon<input id="ccPhone" inputmode="tel"></label><label>Tip<select id="ccType"><option value="Alıcı">Alıcı</option><option value="Satıcı">Satıcı</option><option value="Kiracı">Kiracı</option><option value="Mülk Sahibi">Mülk Sahibi</option></select></label><label>Durum<select id="ccStatus"><option>Yeni</option><option>Sıcak</option><option>Takipte</option><option>Teklif Verdi</option><option>Sonuçlandı</option></select></label><label>Bütçe Min<input id="ccMin" type="number"></label><label>Bütçe Max<input id="ccMax" type="number"></label><label>Gayrimenkul<select id="ccProperty"><option>Konut</option><option>Arsa</option><option>İşyeri</option></select></label><label>Bölge<input id="ccArea" placeholder="Çorlu, Önerler..."></label><label class="full">Notlar<textarea id="ccNotes" rows="3"></textarea></label><button class="gold-btn full">Müşteriyi Kaydet</button></form></dialog>
+<dialog id="crmTaskDialog"><form method="dialog" class="dialog-head"><b>Yeni Takip</b><button>✕</button></form><form id="crmTaskForm" class="crm-form dialog-body"><label class="full">Görev<input id="ctTitle" required placeholder="Ahmet Bey'i ara"></label><label>Müşteri<select id="ctClient"></select></label><label>Tarih<input id="ctDate" type="datetime-local"></label><label>Öncelik<select id="ctPriority"><option>Normal</option><option>Yüksek</option><option>Acil</option></select></label><label class="full">Not<textarea id="ctNotes"></textarea></label><button class="gold-btn full">Takibi Kaydet</button></form></dialog>
 </body>
 </html>

@@ -46,39 +46,9 @@ function factsFor(l){
   return facts.slice(0,4);
 }
 
-function getVisitorId(){
-  let id=localStorage.getItem('uzman-emlak-visitor-id');
-  if(!id){ id=(crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`); localStorage.setItem('uzman-emlak-visitor-id',id); }
-  return id;
-}
-async function trackSiteVisit(){
-  try{
-    const visitor_id=getVisitorId();
-    const last=Number(sessionStorage.getItem('uzman-emlak-visit-tracked')||0);
-    if(Date.now()-last<30*60*1000) return;
-    sessionStorage.setItem('uzman-emlak-visit-tracked',String(Date.now()));
-    const {data:{session}}=await supabase.auth.getSession();
-    await supabase.from('site_visits').insert({visitor_id,user_id:session?.user?.id||null,path:location.pathname});
-  }catch(e){ console.warn('Ziyaret kaydı alınamadı',e); }
-}
-async function loadVisitStats(){
-  const now=Date.now(), day=24*60*60*1000;
-  const today=new Date(); today.setHours(0,0,0,0);
-  const since30=new Date(now-30*day).toISOString();
-  const {data,error}=await supabase.from('site_visits').select('visitor_id,created_at').gte('created_at',since30).order('created_at',{ascending:false}).limit(50000);
-  if(error) return {error};
-  const rows=data||[], countSince=t=>rows.filter(x=>new Date(x.created_at)>=t).length, uniqueSince=t=>new Set(rows.filter(x=>new Date(x.created_at)>=t).map(x=>x.visitor_id)).size;
-  const [{count:totalVisits},{data:allUnique}]=await Promise.all([
-    supabase.from('site_visits').select('*',{count:'exact',head:true}),
-    supabase.from('site_visits').select('visitor_id').limit(50000)
-  ]);
-  return {today:countSince(today), todayUnique:uniqueSince(today), week:countSince(new Date(now-7*day)), weekUnique:uniqueSince(new Date(now-7*day)), month:rows.length, monthUnique:new Set(rows.map(x=>x.visitor_id)).size, total:totalVisits||0, totalUnique:new Set((allUnique||[]).map(x=>x.visitor_id)).size};
-}
-
 async function init(){
   bindUI();
   showSkeletons();
-  trackSiteVisit();
 
   // Recovery olayı sayfa açılır açılmaz gelebilir. Dinleyiciyi getSession'dan ÖNCE kuruyoruz.
   supabase.auth.onAuthStateChange(async (event,session)=>{
@@ -339,10 +309,7 @@ async function loadAdmin(section='pending'){
   }
   if(section==='stats'){
     const activeListings=state.listings.filter(x=>x.status==='active'), views=activeListings.reduce((a,x)=>a+Number(x.view_count||0),0), favs=activeListings.reduce((a,x)=>a+Number(x.favorite_count||0),0);
-    const visit=await loadVisitStats();
-    const visitCards=visit.error?`<div class="manage-row"><div><h3>Ziyaretçi verileri alınamadı</h3><p>${esc(visit.error.message||'')}</p></div></div>`:`<div class="admin-stats"><div class="stat-card"><b>${visit.today}</b><small>Bugünkü Ziyaret</small></div><div class="stat-card"><b>${visit.todayUnique}</b><small>Bugün Tekil Ziyaretçi</small></div><div class="stat-card"><b>${visit.week}</b><small>Son 7 Gün Ziyaret</small></div><div class="stat-card"><b>${visit.weekUnique}</b><small>7 Gün Tekil</small></div><div class="stat-card"><b>${visit.month}</b><small>Son 30 Gün Ziyaret</small></div><div class="stat-card"><b>${visit.monthUnique}</b><small>30 Gün Tekil</small></div><div class="stat-card"><b>${visit.total}</b><small>Toplam Ziyaret</small></div><div class="stat-card"><b>${visit.totalUnique}</b><small>Toplam Tekil Ziyaretçi</small></div></div>`;
-    const top=activeListings.slice().sort((a,b)=>Number(b.view_count||0)-Number(a.view_count||0)).slice(0,10);
-    $('#adminContent').innerHTML=`<h3>Site Ziyaretçileri</h3>${visitCards}<h3>İlan İstatistikleri</h3><div class="admin-stats"><div class="stat-card"><b>${views}</b><small>İlan Görüntülenmesi</small></div><div class="stat-card"><b>${favs}</b><small>Favori</small></div><div class="stat-card"><b>${activeListings.length}</b><small>Aktif İlan</small></div><div class="stat-card"><b>${state.listings.filter(x=>x.is_featured&&x.status==='active').length}</b><small>Vitrin İlanı</small></div></div><h3>En Çok Görüntülenen İlanlar</h3>${top.map((l,i)=>`<div class="manage-row"><div><h3>${i+1}. ${esc(l.title)}</h3><p>İlan No ${l.listing_no} • ${Number(l.view_count||0)} görüntülenme</p></div><button class="mini-btn" data-open-listing="${l.id}">Görüntüle</button></div>`).join('')||'<div class="empty-state">Henüz görüntülenme yok</div>'}`;
+    $('#adminContent').innerHTML=`<div class="admin-stats"><div class="stat-card"><b>${views}</b><small>Toplam Görüntülenme</small></div><div class="stat-card"><b>${favs}</b><small>Favori</small></div><div class="stat-card"><b>${activeListings.length}</b><small>Aktif İlan</small></div><div class="stat-card"><b>${state.listings.filter(x=>x.is_featured&&x.status==='active').length}</b><small>Vitrin İlanı</small></div></div>`;
   }
   const [pending,active,users,reports]=await Promise.all([supabase.from('listings').select('*',{count:'exact',head:true}).eq('status','pending'),supabase.from('listings').select('*',{count:'exact',head:true}).eq('status','active'),supabase.from('profiles').select('*',{count:'exact',head:true}),supabase.from('reports').select('*',{count:'exact',head:true}).eq('status','open')]);
   $('#adminStats').innerHTML=[['Onay Bekleyen',pending.count||0],['Yayındaki İlan',active.count||0],['Üye',users.count||0],['Açık Şikayet',reports.count||0]].map(([k,v])=>`<div class="stat-card"><b>${v}</b><small>${k}</small></div>`).join('');
@@ -358,9 +325,9 @@ async function reportStatus(id,status){ const {error}=await supabase.from('repor
 function nav(name){
   if(['favorites','messages','account'].includes(name)&&!state.user){return openAuth();}
   if(name==='add') return openListingForm();
-  $$('.view').forEach(v=>v.classList.remove('active-view')); const id={home:'homeView',favorites:'favoritesView',messages:'messagesView',account:'accountView'}[name]||'homeView'; $('#'+id).classList.add('active-view');
+  $$('.view').forEach(v=>v.classList.remove('active-view')); const id={home:'homeView',clients:'clientsView',tasks:'tasksView',favorites:'favoritesView',messages:'messagesView',account:'accountView'}[name]||'homeView'; $('#'+id).classList.add('active-view');
   $$('.bottom-nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
-  if(name==='favorites')renderFavoriteView(); if(name==='messages')loadConversations(); if(name==='account')hydrateAccount(); window.scrollTo({top:0,behavior:'smooth'});
+  if(name==='clients'||name==='tasks')CRM.render(); if(name==='favorites')renderFavoriteView(); if(name==='messages')loadConversations(); if(name==='account')hydrateAccount(); window.scrollTo({top:0,behavior:'smooth'});
 }
 function accountTab(tab){ $$('.account-sidebar button').forEach(b=>b.classList.toggle('active',b.dataset.accountTab===tab)); $$('.account-tab').forEach(x=>x.classList.remove('active-account-tab')); $('#'+tab+'Tab').classList.add('active-account-tab'); if(tab==='admin')loadAdmin('pending'); if(tab==='notifications')loadNotifications(); }
 
@@ -381,7 +348,7 @@ applyTheme(localStorage.getItem('uzman-emlak-theme')||'dark');
 function bindUI(){
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hidden')});
   $('#themeBtn').addEventListener('click',toggleTheme); $('#installBtn').addEventListener('click',installApp); $('#homeInstallBtn').addEventListener('click',installApp);
-  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=50').catch(console.warn);
+  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=51').catch(console.warn);
   document.addEventListener('click',async e=>{
     const close=e.target.closest('[data-close]'); if(close){close.closest('dialog').close();return;}
     const navBtn=e.target.closest('[data-nav]'); if(navBtn){nav(navBtn.dataset.nav);return;}
@@ -417,3 +384,26 @@ function bindUI(){
 }
 
 init().catch(err=>{console.error(err);toast('Uygulama başlatılamadı.','err')});
+
+// --- Uzman Emlak Pro CRM v51 ---
+const CRM={
+ clients:JSON.parse(localStorage.getItem('ue-crm-clients')||'[]'),
+ tasks:JSON.parse(localStorage.getItem('ue-crm-tasks')||'[]'),
+ save(){localStorage.setItem('ue-crm-clients',JSON.stringify(this.clients));localStorage.setItem('ue-crm-tasks',JSON.stringify(this.tasks));},
+ id(){return crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random()},
+ render(){
+  const c=this.clients,t=this.tasks; const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  set('crmClientCount',c.length);set('crmHotCount',c.filter(x=>x.status==='Sıcak'||x.status==='Teklif Verdi').length);set('crmTaskCount',t.filter(x=>!x.done).length);
+  let matches=0;c.filter(x=>x.type==='Alıcı'||x.type==='Kiracı').forEach(x=>{matches+=state.listings.filter(l=>l.status==='active'&&(!x.property||l.category===x.property)&&(!x.max||!l.price||Number(l.price)<=Number(x.max))).length});set('crmMatchCount',matches);
+  const row=x=>`<div class="crm-row"><div><b>${esc(x.name)}</b><p>${esc(x.type)} • ${esc(x.status)}${x.area?' • '+esc(x.area):''}</p></div><span class="crm-chip">${esc(x.property||'Müşteri')}</span></div>`;
+  const rc=document.getElementById('crmRecentClients');if(rc)rc.innerHTML=c.slice(-5).reverse().map(row).join('')||'<div class="crm-empty">Henüz müşteri eklenmedi.</div>';
+  const cl=document.getElementById('crmClientsList');if(cl)cl.innerHTML=c.slice().reverse().map(x=>`<div class="crm-row"><div><b>${esc(x.name)}</b><p>${esc(x.phone||'Telefon yok')} • ${esc(x.type)} • ${esc(x.status)} • ${esc(x.area||'Bölge yok')}</p><small>${esc(x.notes||'')}</small></div><div>${x.phone?`<a class="mini-btn" href="tel:${esc(x.phone)}">Ara</a>`:''}<button class="mini-btn warn" data-crm-del-client="${x.id}">Sil</button></div></div>`).join('')||'<div class="crm-empty">İlk müşterinizi ekleyin.</div>';
+  const taskrow=x=>`<div class="crm-row"><div><b>${esc(x.title)}</b><p>${esc(x.clientName||'Genel')} • ${x.date?new Date(x.date).toLocaleString('tr-TR'):'Tarih yok'} • ${esc(x.priority)}</p></div><button class="mini-btn ${x.done?'':'ok'}" data-crm-task-done="${x.id}">${x.done?'Tamamlandı':'Tamamla'}</button></div>`;
+  const tl=document.getElementById('crmTasksList');if(tl)tl.innerHTML=t.slice().reverse().map(taskrow).join('')||'<div class="crm-empty">Bekleyen takip yok.</div>';
+  const today=document.getElementById('crmTodayTasks');if(today)today.innerHTML=t.filter(x=>!x.done).slice(0,5).map(taskrow).join('')||'<div class="crm-empty">Bugün için takip yok.</div>';
+  const insight=document.getElementById('crmInsight');if(insight)insight.innerHTML=`<div class="crm-row"><div><b>${matches} olası müşteri-portföy eşleşmesi</b><p>Aktif portföyleriniz müşteri kriterleriyle karşılaştırıldı.</p></div><span class="crm-chip">AKILLI</span></div><div class="crm-row"><div><b>${c.filter(x=>x.status==='Sıcak').length} sıcak müşteri</b><p>Öncelikli geri dönüş için listenizi güncel tutun.</p></div></div>`;
+  const sel=document.getElementById('ctClient');if(sel)sel.innerHTML='<option value="">Genel görev</option>'+c.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');
+ },
+ open(type){if(type==='client')document.getElementById('crmClientDialog').showModal();else if(type==='task')document.getElementById('crmTaskDialog').showModal();else if(type==='matches'){toast(`${document.getElementById('crmMatchCount')?.textContent||0} potansiyel eşleşme bulundu.`);nav('clients')}else if(type==='pipeline'){toast('Satış hunisi: Yeni → Takipte → Sıcak → Teklif → Sonuçlandı');nav('clients')}else if(type==='commission'){const price=prompt('Satış bedeli (TL)');if(price){const rate=prompt('Komisyon oranı (%)','2');if(rate)alert(`Tahmini komisyon: ${new Intl.NumberFormat('tr-TR').format(Number(price)*Number(rate)/100)} TL`)}}}
+};
+window.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>CRM.render(),300);document.getElementById('crmClientForm')?.addEventListener('submit',e=>{e.preventDefault();CRM.clients.push({id:CRM.id(),name:ccName.value,phone:ccPhone.value,type:ccType.value,status:ccStatus.value,min:ccMin.value,max:ccMax.value,property:ccProperty.value,area:ccArea.value,notes:ccNotes.value,created:new Date().toISOString()});CRM.save();CRM.render();e.target.reset();crmClientDialog.close();toast('Müşteri kaydedildi.');});document.getElementById('crmTaskForm')?.addEventListener('submit',e=>{e.preventDefault();const c=CRM.clients.find(x=>x.id===ctClient.value);CRM.tasks.push({id:CRM.id(),title:ctTitle.value,clientId:ctClient.value,clientName:c?.name||'',date:ctDate.value,priority:ctPriority.value,notes:ctNotes.value,done:false});CRM.save();CRM.render();e.target.reset();crmTaskDialog.close();toast('Takip oluşturuldu.');});document.addEventListener('click',e=>{const o=e.target.closest('[data-crm-open]');if(o){CRM.open(o.dataset.crmOpen);return}const d=e.target.closest('[data-crm-del-client]');if(d&&confirm('Müşteri silinsin mi?')){CRM.clients=CRM.clients.filter(x=>x.id!==d.dataset.crmDelClient);CRM.save();CRM.render()}const td=e.target.closest('[data-crm-task-done]');if(td){const x=CRM.tasks.find(x=>x.id===td.dataset.crmTaskDone);if(x)x.done=!x.done;CRM.save();CRM.render()}})});

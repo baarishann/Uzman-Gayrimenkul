@@ -1,9 +1,9 @@
 {
   "name": "Uzman Emlak",
   "short_name": "Uzman Emlak",
-  "description": "Uzman Emlak - Türkiye geneli gayrimenkul ilan platformu",
+  "description": "Uzman Emlak - Emlakçı CRM, müşteri ve portföy yönetimi",
   "id": "/",
-  "start_url": "./?v=51",
+  "start_url": "./?v=53",
   "scope": "./",
   "display": "standalone",
   "background_color": "#071015",

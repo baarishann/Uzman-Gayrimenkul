@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0c" />
   <meta name="description" content="Uzman Emlak - Türkiye genelinde satılık, kiralık, arsa, işyeri ve kat karşılığı gayrimenkul ilanları." />
-  <link rel="manifest" href="manifest.json?v=53" />
+  <link rel="manifest" href="manifest.json?v=54" />
   <link rel="icon" href="uzman-emlak-icon-v46-192.png" />
   <link rel="apple-touch-icon" href="uzman-emlak-icon-v46-192.png" />
-  <link rel="stylesheet" href="style.css?v=53" />
+  <link rel="stylesheet" href="style.css?v=54" />
   <title>Uzman Emlak</title>
 </head>
 <body>
@@ -91,10 +91,10 @@
 
   <nav class="bottom-nav">
     <button data-nav="clients"><span>♟</span>Müşterilerim</button>
-    <button data-nav="add"><span>▣</span>Portföyüm</button>
-    <button class="active nav-focus" data-nav="tasks"><span class="nav-add">▥</span>Pano</button>
+    <button data-nav="account" data-account-jump="listings"><span>▣</span>Portföyüm</button>
+    <button class="nav-focus" data-nav="tasks"><span class="nav-add">▥</span>Pano</button>
     <button data-nav="evaluation"><span>▦</span>Değerlendirme</button>
-    <button data-nav="home"><span>⌂</span>Ana Sayfa</button>
+    <button class="active" data-nav="home"><span>⌂</span>Ana Sayfa</button>
   </nav>
 
   <dialog id="listingDialog" class="modal listing-modal"><button class="modal-close" data-close>×</button><div id="listingDetail"></div></dialog>
@@ -121,7 +121,7 @@
 
   <dialog id="filterDialog" class="modal filter-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">DETAYLI ARAMA</div><h2>Filtreler</h2></div><div class="form-grid"><label>Min. Fiyat<input id="fMinPrice" type="number" min="0" /></label><label>Maks. Fiyat<input id="fMaxPrice" type="number" min="0" /></label><label>Min. m²<input id="fMinM2" type="number" min="0" /></label><label>Maks. m²<input id="fMaxM2" type="number" min="0" /></label><label>Oda Sayısı<input id="fRooms" placeholder="3+1" /></label><label>Isıtma<input id="fHeating" placeholder="Kombi" /></label><label>Ada<input id="fAda" /></label><label>Parsel<input id="fParsel" /></label><div class="full form-actions"><button id="applyAdvancedFilter" class="gold-btn">Filtrele</button></div></div></dialog>
 
-  <script type="module" src="app.js?v=53"></script>
+  <script type="module" src="app.js?v=54"></script>
 
 <dialog id="crmClientDialog"><form method="dialog" class="dialog-head"><b>Yeni Müşteri</b><button>✕</button></form><form id="crmClientForm" class="crm-form dialog-body"><label>Ad Soyad<input id="ccName" required></label><label>Telefon<input id="ccPhone" inputmode="tel"></label><label>Tip<select id="ccType"><option value="Alıcı">Alıcı</option><option value="Satıcı">Satıcı</option><option value="Kiracı">Kiracı</option><option value="Mülk Sahibi">Mülk Sahibi</option></select></label><label>Durum<select id="ccStatus"><option>Yeni</option><option>Sıcak</option><option>Takipte</option><option>Teklif Verdi</option><option>Sonuçlandı</option></select></label><label>Bütçe Min<input id="ccMin" type="number"></label><label>Bütçe Max<input id="ccMax" type="number"></label><label>Gayrimenkul<select id="ccProperty"><option>Konut</option><option>Arsa</option><option>İşyeri</option></select></label><label>Bölge<input id="ccArea" placeholder="Çorlu, Önerler..."></label><label>Sonraki Takip<input id="ccFollow" type="datetime-local"></label><label>Oda / Özellik<input id="ccRooms" placeholder="3+1, köşe, krediye uygun..."></label><label class="full">Notlar<textarea id="ccNotes" rows="3"></textarea></label><button class="gold-btn full">Müşteriyi Kaydet</button></form></dialog>
 <dialog id="crmTaskDialog"><form method="dialog" class="dialog-head"><b>Yeni Takip</b><button>✕</button></form><form id="crmTaskForm" class="crm-form dialog-body"><label class="full">Görev<input id="ctTitle" required placeholder="Ahmet Bey'i ara"></label><label>Müşteri<select id="ctClient"></select></label><label>Tarih<input id="ctDate" type="datetime-local"></label><label>Öncelik<select id="ctPriority"><option>Normal</option><option>Yüksek</option><option>Acil</option></select></label><label class="full">Not<textarea id="ctNotes"></textarea></label><button class="gold-btn full">Takibi Kaydet</button></form></dialog>

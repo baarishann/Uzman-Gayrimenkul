@@ -81,11 +81,11 @@ function openResetPasswordDialog(){
   if(dlg && !dlg.open) dlg.showModal();
 }
 
-function showSkeletons(){ $('#listingLoading').innerHTML = Array.from({length:6},()=>'<div class="skeleton"></div>').join(''); }
+function showSkeletons(){ const el=$('#listingLoading'); if(el) el.innerHTML = Array.from({length:6},()=>'<div class="skeleton"></div>').join(''); }
 
 async function loadListings(){
   const { data, error } = await supabase.from('listings').select('*').order('is_featured',{ascending:false}).order('published_at',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false});
-  if(error){ console.error(error); $('#listingLoading').innerHTML=''; toast('İlanlar yüklenemedi.','err'); return; }
+  if(error){ console.error(error); const loading=$('#listingLoading'); if(loading) loading.innerHTML=''; toast('İlanlar yüklenemedi.','err'); return; }
   const listings=data||[];
   if(listings.length){
     const ids=listings.map(x=>x.id);
@@ -94,15 +94,16 @@ async function loadListings(){
     listings.forEach(l=>l.images=map[l.id]||[]);
   }
   state.listings=listings;
-  $('#listingLoading').innerHTML='';
+  const loading=$('#listingLoading'); if(loading) loading.innerHTML='';
   refreshNeighborhoods(); renderListings(); renderRecent();
 }
 
 function refreshNeighborhoods(){
-  const current=$('#neighborhoodFilter').value;
+  const select=$('#neighborhoodFilter'); if(!select) return;
+  const current=select.value;
   const items=[...new Set(state.listings.map(x=>x.neighborhood).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr'));
-  $('#neighborhoodFilter').innerHTML='<option value="all">Tüm Mahalleler</option>'+items.map(x=>`<option>${esc(x)}</option>`).join('');
-  if(items.includes(current)) $('#neighborhoodFilter').value=current;
+  select.innerHTML='<option value="all">Tüm Mahalleler</option>'+items.map(x=>`<option>${esc(x)}</option>`).join('');
+  if(items.includes(current)) select.value=current;
 }
 
 function filteredListings(){
@@ -126,9 +127,10 @@ function filteredListings(){
 }
 
 function renderListings(){
-  const arr=filteredListings(); const grid=$('#listingGrid');
-  grid.innerHTML=arr.map(listingCard).join(''); $('#listingEmpty').classList.toggle('hidden',arr.length>0);
+  const grid=$('#listingGrid'); if(!grid) return;
+  const arr=filteredListings(); grid.innerHTML=arr.map(listingCard).join(''); const empty=$('#listingEmpty'); if(empty) empty.classList.toggle('hidden',arr.length>0);
 }
+
 
 function listingCard(l){
   const img=l.images?.find(x=>x.is_cover)?.image_url || l.images?.[0]?.image_url;
@@ -147,7 +149,7 @@ function listingCard(l){
 const RECENT_KEY='uzman-emlak-recent-v1';
 function getRecentIds(){try{return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]')}catch{return []}}
 function addRecent(id){const ids=[id,...getRecentIds().filter(x=>x!==id)].slice(0,8);localStorage.setItem(RECENT_KEY,JSON.stringify(ids));renderRecent()}
-function renderRecent(){const ids=getRecentIds();const arr=ids.map(id=>state.listings.find(x=>x.id===id)).filter(x=>x&&x.status==='active');const sec=$('#recentSection');if(!sec)return;sec.classList.toggle('hidden',!arr.length);$('#recentGrid').innerHTML=arr.map(listingCard).join('')}
+function renderRecent(){const ids=getRecentIds();const arr=ids.map(id=>state.listings.find(x=>x.id===id)).filter(x=>x&&x.status==='active');const sec=$('#recentSection');if(!sec)return;sec.classList.toggle('hidden',!arr.length);const grid=$('#recentGrid');if(grid)grid.innerHTML=arr.map(listingCard).join('')}
 function clearRecent(){localStorage.removeItem(RECENT_KEY);renderRecent();}
 function isIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent)}
 function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}
@@ -346,12 +348,13 @@ function applyTheme(theme){
 function toggleTheme(){ applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light'); }
 applyTheme(localStorage.getItem('uzman-emlak-theme')||'dark');
 function bindUI(){
-  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').classList.remove('hidden')});
-  $('#themeBtn').addEventListener('click',toggleTheme); $('#installBtn').addEventListener('click',installApp); $('#homeInstallBtn').addEventListener('click',installApp);
-  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=51').catch(console.warn);
+  const on=(id,event,handler)=>{const el=$('#'+id);if(el)el.addEventListener(event,handler);};
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;const b=$('#installBtn');if(b)b.classList.remove('hidden')});
+  on('themeBtn','click',toggleTheme); on('installBtn','click',installApp); on('homeInstallBtn','click',installApp);
+  if('serviceWorker'in navigator) navigator.serviceWorker.register('./sw.js?v=54').catch(console.warn);
   document.addEventListener('click',async e=>{
-    const close=e.target.closest('[data-close]'); if(close){close.closest('dialog').close();return;}
-    const navBtn=e.target.closest('[data-nav]'); if(navBtn){nav(navBtn.dataset.nav);return;}
+    const close=e.target.closest('[data-close]'); if(close){close.closest('dialog')?.close();return;}
+    const navBtn=e.target.closest('[data-nav]'); if(navBtn){const target=navBtn.dataset.nav;nav(target);if(navBtn.dataset.accountJump&&state.user)setTimeout(()=>accountTab(navBtn.dataset.accountJump),0);return;}
     const fav=e.target.closest('[data-fav]'); if(fav){e.stopPropagation();await toggleFavorite(fav.dataset.fav);return;}
     const open=e.target.closest('[data-open-listing]'); if(open){await openListing(open.dataset.openListing);return;}
     const edit=e.target.closest('[data-edit-listing]'); if(edit){const l=state.listings.find(x=>x.id===edit.dataset.editListing)||null;openListingForm(l);return;}
@@ -365,21 +368,22 @@ function bindUI(){
     const rn=e.target.closest('[data-read-notification]'); if(rn){await readNotification(rn.dataset.readNotification);return;}
     const msg=e.target.closest('[data-message-owner]'); if(msg){await startListingConversation(msg.dataset.messageOwner);return;}
     const rep=e.target.closest('[data-report-listing]'); if(rep){await reportListing(rep.dataset.reportListing);return;}
-    const share=e.target.closest('[data-share-listing]'); if(share){const l=state.listings.find(x=>x.id===share.dataset.shareListing); const text=`${l?.title||'Uzman Emlak'} - ${money(l||{})}`; if(navigator.share) navigator.share({title:'Uzman Emlak',text,url:location.href}); else navigator.clipboard.writeText(`${text} ${location.href}`).then(()=>toast('Bağlantı kopyalandı.')); return;}
+    const share=e.target.closest('[data-share-listing]'); if(share){const l=state.listings.find(x=>x.id===share.dataset.shareListing); const text=`${l?.title||'Uzman Emlak'} - ${money(l||{})}`; if(navigator.share) navigator.share({title:'Uzman Emlak',text,url:location.href}); else if(navigator.clipboard) navigator.clipboard.writeText(`${text} ${location.href}`).then(()=>toast('Bağlantı kopyalandı.')); return;}
     const at=e.target.closest('[data-account-tab]'); if(at){accountTab(at.dataset.accountTab);return;}
     const ad=e.target.closest('[data-admin-section]'); if(ad){$$('[data-admin-section]').forEach(x=>x.classList.toggle('active',x===ad));await loadAdmin(ad.dataset.adminSection);return;}
     const authTab=e.target.closest('[data-auth-tab]'); if(authTab){openAuth(authTab.dataset.authTab);return;}
-    const qcat=e.target.closest('[data-cat]'); if(qcat){state.filters.category=qcat.dataset.cat;$('#categoryFilter').value=qcat.dataset.cat;renderListings();return;}
+    const qcat=e.target.closest('[data-cat]'); if(qcat){state.filters.category=qcat.dataset.cat;const f=$('#categoryFilter');if(f)f.value=qcat.dataset.cat;renderListings();return;}
     const qdeal=e.target.closest('[data-deal-quick]'); if(qdeal){state.filters.deal=qdeal.dataset.dealQuick;$$('#dealTabs button').forEach(x=>x.classList.toggle('active',x.dataset.deal===state.filters.deal));renderListings();return;}
   });
   document.addEventListener('change',async e=>{ if(e.target.matches('[data-role-select]')) await changeUserRole(e.target.dataset.roleSelect,e.target.value); });
-  $('#authBtn').onclick=()=>openAuth(); $('#forgotPasswordBtn').onclick=forgotPassword; $('#resetPasswordForm').onsubmit=updatePassword; $('#changePasswordForm').onsubmit=changePassword; $('#feedbackForm').onsubmit=sendFeedback; $('#deleteAccountBtn').onclick=deleteMyAccount; $('#profilePhoto').onchange=e=>uploadProfilePhoto(e.target.files?.[0]); $('#userBtn').onclick=()=>nav('account'); $('#loginForm').onsubmit=login; $('#signupForm').onsubmit=signup; $('#logoutBtn').onclick=logout; $('#profileForm').onsubmit=saveProfile; $('#listingForm').onsubmit=e=>saveListing(e,'pending'); $('#saveDraftBtn').onclick=()=>saveListing(null,'draft'); $('#newListingBtn2').onclick=()=>openListingForm(); $('#floatingAddBtn').onclick=()=>openListingForm(); $('#lfCategory').onchange=toggleListingFields; $('#messageForm').onsubmit=sendMessage; $('#markAllReadBtn').onclick=markAllRead; $('#clearRecentBtn').onclick=clearRecent;
-  $('#lfImages').onchange=()=>{const files=[...$('#lfImages').files].slice(0,12);$('#uploadPreview').innerHTML=files.map(f=>`<div class="upload-thumb"><img src="${URL.createObjectURL(f)}"></div>`).join('')};
+  const assign=(id,prop,fn)=>{const el=$('#'+id);if(el)el[prop]=fn;};
+  assign('authBtn','onclick',()=>openAuth()); assign('forgotPasswordBtn','onclick',forgotPassword); assign('resetPasswordForm','onsubmit',updatePassword); assign('changePasswordForm','onsubmit',changePassword); assign('feedbackForm','onsubmit',sendFeedback); assign('deleteAccountBtn','onclick',deleteMyAccount); assign('profilePhoto','onchange',e=>uploadProfilePhoto(e.target.files?.[0])); assign('userBtn','onclick',()=>nav('account')); assign('loginForm','onsubmit',login); assign('signupForm','onsubmit',signup); assign('logoutBtn','onclick',logout); assign('profileForm','onsubmit',saveProfile); assign('listingForm','onsubmit',e=>saveListing(e,'pending')); assign('saveDraftBtn','onclick',()=>saveListing(null,'draft')); assign('newListingBtn2','onclick',()=>openListingForm()); assign('floatingAddBtn','onclick',()=>openListingForm()); assign('lfCategory','onchange',toggleListingFields); assign('messageForm','onsubmit',sendMessage); assign('markAllReadBtn','onclick',markAllRead); assign('clearRecentBtn','onclick',clearRecent);
+  assign('lfImages','onchange',()=>{const input=$('#lfImages'),preview=$('#uploadPreview');if(!input||!preview)return;const files=[...input.files].slice(0,12);preview.innerHTML=files.map(f=>`<div class="upload-thumb"><img src="${URL.createObjectURL(f)}"></div>`).join('')});
   $$('#dealTabs button').forEach(b=>b.onclick=()=>{state.filters.deal=b.dataset.deal;$$('#dealTabs button').forEach(x=>x.classList.toggle('active',x===b));renderListings()});
-  $('#searchBtn').onclick=()=>{state.filters.q=$('#searchInput').value.trim();renderListings()}; $('#searchInput').onkeydown=e=>{if(e.key==='Enter'){$('#searchBtn').click()}};
-  $('#categoryFilter').onchange=e=>{state.filters.category=e.target.value;renderListings()}; $('#neighborhoodFilter').onchange=e=>{state.filters.neighborhood=e.target.value;renderListings()}; $('#sortFilter').onchange=e=>{state.filters.sort=e.target.value;renderListings()};
-  $('#advancedFilterBtn').onclick=()=>$('#filterDialog').showModal(); $('#applyAdvancedFilter').onclick=()=>{Object.assign(state.filters,{minPrice:$('#fMinPrice').value,maxPrice:$('#fMaxPrice').value,minM2:$('#fMinM2').value,maxM2:$('#fMaxM2').value,rooms:$('#fRooms').value.trim(),heating:$('#fHeating').value.trim(),ada:$('#fAda').value.trim(),parsel:$('#fParsel').value.trim()});$('#filterDialog').close();renderListings()};
-  $('#clearFiltersBtn').onclick=()=>{state.filters={deal:'all',category:'all',neighborhood:'all',q:'',sort:'new',minPrice:'',maxPrice:'',minM2:'',maxM2:'',rooms:'',heating:'',ada:'',parsel:''};$('#searchInput').value='';$('#categoryFilter').value='all';$('#neighborhoodFilter').value='all';$('#sortFilter').value='new';$$('#dealTabs button').forEach(x=>x.classList.toggle('active',x.dataset.deal==='all'));renderListings()};
+  assign('searchBtn','onclick',()=>{state.filters.q=$('#searchInput')?.value.trim()||'';renderListings()}); assign('searchInput','onkeydown',e=>{if(e.key==='Enter')$('#searchBtn')?.click()});
+  assign('categoryFilter','onchange',e=>{state.filters.category=e.target.value;renderListings()}); assign('neighborhoodFilter','onchange',e=>{state.filters.neighborhood=e.target.value;renderListings()}); assign('sortFilter','onchange',e=>{state.filters.sort=e.target.value;renderListings()});
+  assign('advancedFilterBtn','onclick',()=>$('#filterDialog')?.showModal()); assign('applyAdvancedFilter','onclick',()=>{Object.assign(state.filters,{minPrice:$('#fMinPrice')?.value||'',maxPrice:$('#fMaxPrice')?.value||'',minM2:$('#fMinM2')?.value||'',maxM2:$('#fMaxM2')?.value||'',rooms:$('#fRooms')?.value.trim()||'',heating:$('#fHeating')?.value.trim()||'',ada:$('#fAda')?.value.trim()||'',parsel:$('#fParsel')?.value.trim()||''});$('#filterDialog')?.close();renderListings()});
+  assign('clearFiltersBtn','onclick',()=>{state.filters={deal:'all',category:'all',neighborhood:'all',q:'',sort:'new',minPrice:'',maxPrice:'',minM2:'',maxM2:'',rooms:'',heating:'',ada:'',parsel:''};const s=$('#searchInput');if(s)s.value='';for(const [id,val] of [['categoryFilter','all'],['neighborhoodFilter','all'],['sortFilter','new']]){const el=$('#'+id);if(el)el.value=val;}$$('#dealTabs button').forEach(x=>x.classList.toggle('active',x.dataset.deal==='all'));renderListings()});
   $$('.brand').forEach(b=>b.onclick=()=>nav('home'));
 }
 

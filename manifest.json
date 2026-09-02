@@ -3,7 +3,7 @@
   "short_name": "Uzman Emlak",
   "description": "Uzman Emlak - Emlakçı CRM, müşteri ve portföy yönetimi",
   "id": "/",
-  "start_url": "./?v=53",
+  "start_url": "./?v=54",
   "scope": "./",
   "display": "standalone",
   "background_color": "#071015",

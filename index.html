@@ -1,132 +1,162 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0b0c" />
-  <meta name="description" content="Uzman Emlak - Türkiye genelinde satılık, kiralık, arsa, işyeri ve kat karşılığı gayrimenkul ilanları." />
-  <link rel="manifest" href="manifest.json?v=54" />
-  <link rel="icon" href="uzman-emlak-icon-v46-192.png" />
-  <link rel="apple-touch-icon" href="uzman-emlak-icon-v46-192.png" />
-  <link rel="stylesheet" href="style.css?v=54" />
-  <title>Uzman Emlak</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Konut altı savaş sığınağı fikri: amaç, planlama, malzeme grupları, yaşam destek sistemleri, güvenlik ve uygulama süreci hakkında bilgilendirici rehber.">
+  <meta name="theme-color" content="#111827">
+  <title>Güvenli Yaşam | Konut Altı Sığınak Rehberi</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="toastRoot" class="toast-root" aria-live="polite"></div>
-
-  <header class="topbar">
-    <div class="brand" data-nav="home" role="button" tabindex="0">
-      <div><strong>UZMAN <span>EMLAK</span></strong><small>Emlakçı CRM & Portföy Yönetimi</small></div>
-    </div>
-    <div class="top-actions">
-      <button id="themeBtn" class="ghost-btn theme-btn" type="button" aria-label="Tema değiştir">☀️ Aydınlık</button>
-      <button id="installBtn" class="ghost-btn hidden">Uygulamayı Yükle</button>
-      <button id="authBtn" class="gold-btn">Giriş Yap</button>
-      <button id="userBtn" class="avatar-btn hidden" aria-label="Hesabım">U</button>
-    </div>
-  </header>
-
-  <main id="app">
-    <section id="homeView" class="view active-view"><div class="crm-shell">
-      <div class="crm-welcome"><div><div class="eyebrow">UZMAN EMLAK • PROFESYONEL CRM</div><h1>Merhaba 👋</h1><p>Müşterilerini, portföylerini ve günün fırsatlarını tek ekrandan yönet.</p></div><button class="gold-btn" data-crm-open="client">+ Müşteri Ekle</button></div>
-      <div class="crm-kpis"><div class="crm-kpi kpi-blue"><b id="crmClientCount">0</b><small>Müşteri</small></div><div class="crm-kpi kpi-green"><b id="crmMatchCount">0</b><small>Eşleşme</small></div><div class="crm-kpi kpi-purple"><b id="crmHotCount">0</b><small>Sıcak Fırsat</small></div><div class="crm-kpi kpi-orange"><b id="crmTaskCount">0</b><small>Açık Görev</small></div></div><button class="focus-card" data-nav="tasks"><small>BUGÜNÜN ODAĞI</small><strong><span id="focusTaskCount">0</span> açık görev</strong><span>Takipleri görüntüle →</span></button>
-      <div class="crm-grid"><div class="crm-card"><h2>Hızlı İşlemler</h2><div class="crm-actions"><button class="crm-action" data-crm-open="client"><span>👤</span><b>Müşteri Ekle</b><small>Alıcı / satıcı kaydet</small></button><button class="crm-action" data-nav="account" data-account-jump="listings"><span>🏠</span><b>Portföyler</b><small>İlanlarını yönet</small></button><button class="crm-action" data-crm-open="task"><span>✓</span><b>Takip Ekle</b><small>Arama ve görev oluştur</small></button><button class="crm-action" data-crm-open="matches"><span>⚡</span><b>Akıllı Eşleşme</b><small>Müşteriye portföy bul</small></button><button class="crm-action" data-crm-open="pipeline"><span>📈</span><b>Satış Hunisi</b><small>Sıcak fırsatları gör</small></button><button class="crm-action" data-crm-open="commission"><span>₺</span><b>Komisyon</b><small>Kazanç hesabı</small></button><button class="crm-action" data-crm-open="import"><span>⇩</span><b>İçe Aktar</b><small>Sahibinden / CSV</small></button></div></div>
-      <div class="crm-card"><h2>Bugünkü Takipler</h2><div id="crmTodayTasks" class="crm-list"></div></div>
-      <div class="crm-card"><h2>Son Müşteriler</h2><div id="crmRecentClients" class="crm-list"></div></div>
-      <div class="crm-card"><h2>Akıllı Özet</h2><div id="crmInsight" class="crm-list"></div></div></div>
-    </div></section>
-    <section id="clientsView" class="view"><div class="crm-shell"><div class="crm-page-head"><div><div class="eyebrow">MÜŞTERİ YÖNETİMİ</div><h1>Müşteriler</h1></div><button class="gold-btn" data-crm-open="client">+ Yeni Müşteri</button></div><div class="crm-toolbar"><input id="crmClientSearch" placeholder="Müşteri ara..."><select id="crmClientFilter"><option value="">Tüm durumlar</option><option>Yeni</option><option>Sıcak</option><option>Takipte</option><option>Teklif Verdi</option><option>Sonuçlandı</option></select></div><div class="crm-summary-strip"><div class="crm-summary-box"><b id="crmDueToday">0</b><small>Bugün aranacak</small></div><div class="crm-summary-box"><b id="crmOverdue">0</b><small>Geciken takip</small></div><div class="crm-summary-box"><b id="crmHighScore">0</b><small>Yüksek potansiyel</small></div></div><div id="crmClientsList" class="crm-list"></div></div></section>
-    <section id="tasksView" class="view"><div class="crm-shell"><div class="crm-page-head"><div><div class="eyebrow">GÜNLÜK PLAN</div><h1>Takip & Görevler</h1></div><button class="gold-btn" data-crm-open="task">+ Takip Ekle</button></div><div id="crmTasksList" class="crm-list"></div></div></section>
-    <section id="evaluationView" class="view"><div class="crm-shell"><div class="crm-page-head"><div><div class="eyebrow">GÜN DEĞERLENDİRME</div><h1>Gününüzü analiz edin</h1><p>Arama, görüşme ve ziyaretlerinizi kaydedin.</p></div></div><div class="daily-date" id="dailyDate"></div><div class="activity-grid"><div class="activity-card"><span>☎</span><b id="dailyCalls">0</b><small>Arama</small><div><button data-daily="calls" data-step="-1">−</button><button data-daily="calls" data-step="1">+</button></div></div><div class="activity-card"><span>◆</span><b id="dailyMeetings">0</b><small>Görüşme</small><div><button data-daily="meetings" data-step="-1">−</button><button data-daily="meetings" data-step="1">+</button></div></div><div class="activity-card"><span>⌖</span><b id="dailyVisits">0</b><small>Ziyaret</small><div><button data-daily="visits" data-step="-1">−</button><button data-daily="visits" data-step="1">+</button></div></div></div><div class="crm-card daily-review"><h2>Günün Nasıl Geçti?</h2><div class="star-rating" id="dailyStars"><button data-star="1">★</button><button data-star="2">★</button><button data-star="3">★</button><button data-star="4">★</button><button data-star="5">★</button></div><textarea id="dailyNotes" rows="5" placeholder="Bugünkü izlenimler, önemli gelişmeler..."></textarea><button id="saveDailyBtn" class="gold-btn">Günü Kaydet</button></div></div></section>
-    <section id="favoritesView" class="view shell">
-      <div class="page-title"><div><div class="eyebrow">HESABIM</div><h1>Favorilerim</h1></div></div>
-      <div id="favoritesGrid" class="listing-grid"></div>
-      <div id="favoritesEmpty" class="empty-state hidden"><div>♡</div><h3>Henüz favoriniz yok</h3><p>Beğendiğiniz ilanları kalp simgesiyle kaydedebilirsiniz.</p></div>
-    </section>
-
-    <section id="messagesView" class="view shell">
-      <div class="page-title"><div><div class="eyebrow">İLETİŞİM</div><h1>Mesajlarım</h1></div></div>
-      <div class="messages-layout">
-        <aside id="conversationList" class="conversation-list"></aside>
-        <section class="chat-panel">
-          <div id="chatEmpty" class="empty-state compact"><div>✉</div><h3>Bir konuşma seçin</h3><p>İlan sahibiyle uygulama içinden mesajlaşabilirsiniz.</p></div>
-          <div id="chatActive" class="hidden chat-active">
-            <div id="chatHeader" class="chat-header"></div>
-            <div id="messageList" class="message-list"></div>
-            <form id="messageForm" class="message-form"><textarea id="messageInput" maxlength="5000" rows="2" placeholder="Mesajınızı yazın..."></textarea><button class="gold-btn">Gönder</button></form>
-          </div>
-        </section>
-      </div>
-    </section>
-
-    <section id="accountView" class="view shell">
-      <div class="page-title"><div><div class="eyebrow">ÜYE PANELİ</div><h1>Hesabım</h1></div><button id="logoutBtn" class="danger-btn">Çıkış Yap</button></div>
-      <div class="account-grid">
-        <aside class="account-sidebar">
-          <button class="active" data-account-tab="profile">Profilim</button>
-          <button data-account-tab="listings">İlanlarım</button>
-          <button data-account-tab="notifications">Bildirimler <span id="notificationBadge" class="badge hidden">0</span></button><button data-account-tab="support">Destek & Güvenlik</button>
-          <button id="adminTabBtn" data-account-tab="admin" class="hidden">Yönetim Paneli</button>
-        </aside>
-        <div class="account-content">
-          <section id="profileTab" class="account-tab active-account-tab">
-            <div class="panel-card"><h2>Profil Bilgileri</h2><div class="profile-photo-row"><div id="profileAvatar" class="profile-avatar">Ü</div><label class="ghost-btn avatar-upload">Profil Fotoğrafı<input id="profilePhoto" type="file" accept="image/jpeg,image/png,image/webp" hidden></label></div><form id="profileForm" class="form-grid"><label>Ad Soyad<input id="profileName" required /></label><label>Telefon<input id="profilePhone" inputmode="tel" /></label><label>Firma<input id="profileCompany" /></label><label class="full">Hakkımda<textarea id="profileBio" rows="4"></textarea></label><div class="full form-actions"><button class="gold-btn">Profili Kaydet</button></div></form><hr class="soft-rule"><div class="password-change"><h3>Şifre Değiştir</h3><p class="location">Mevcut şifrenizi doğrulayıp yeni şifrenizi belirleyin.</p><form id="changePasswordForm" class="form-grid"><label class="full">Mevcut Şifre<input id="currentPassword" type="password" minlength="6" autocomplete="current-password" required></label><label>Yeni Şifre<input id="changeNewPassword" type="password" minlength="6" autocomplete="new-password" required></label><label>Yeni Şifre Tekrar<input id="changeNewPassword2" type="password" minlength="6" autocomplete="new-password" required></label><div class="full form-actions"><button class="gold-btn">Şifremi Değiştir</button></div></form></div></div>
-          </section>
-          <section id="listingsTab" class="account-tab">
-            <div class="tab-toolbar"><div><h2>İlanlarım</h2><p>İlanlarınız onaylandıktan sonra yayına alınır.</p></div><button id="newListingBtn2" class="gold-btn">+ Yeni İlan</button></div>
-            <div id="myListings" class="manage-list"></div>
-          </section>
-          <section id="supportTab" class="account-tab"><div class="panel-card"><h2>Destek & Güvenlik</h2><p class="location">Önerinizi, karşılaştığınız sorunu veya şikayetinizi bize iletin.</p><form id="feedbackForm" class="form-grid"><label>Bildirim Türü<select id="feedbackType"><option value="suggestion">Öneri</option><option value="problem">Sorun / Hata</option><option value="complaint">Şikayet</option><option value="other">Diğer</option></select></label><label class="full">Açıklama<textarea id="feedbackDetails" rows="5" required maxlength="3000"></textarea></label><div class="full form-actions"><button class="gold-btn">Gönder</button></div></form><hr class="soft-rule"><details><summary>Gizlilik & KVKK</summary><p class="location">Hesap ve ilan işlemleri için verdiğiniz ad, iletişim, profil ve ilan bilgileri platformun çalışması, güvenlik ve destek amaçlarıyla işlenir. Yalnızca gerekli bilgileri paylaşın. Ayrıntılı ve hukuki metin yayına alınmadan önce profesyonel inceleme önerilir.</p></details><details><summary>Kullanım Koşulları</summary><p class="location">Kullanıcılar ilan ve mesaj içeriklerinin doğruluğundan sorumludur. Sahte, yanıltıcı, hukuka aykırı veya başkalarının haklarını ihlal eden içerikler kaldırılabilir.</p></details><div class="danger-zone"><h3>Hesabı Sil</h3><p class="location">Bu işlem geri alınamaz.</p><button id="deleteAccountBtn" class="danger-btn" type="button">Hesabımı Kalıcı Olarak Sil</button></div></div></section><section id="notificationsTab" class="account-tab"><div class="tab-toolbar"><div><h2>Bildirimler</h2><p>İlan ve mesaj hareketleri.</p></div><button id="markAllReadBtn" class="ghost-btn">Tümünü okundu yap</button></div><div id="notificationList" class="notification-list"></div></section>
-          <section id="adminTab" class="account-tab">
-            <div class="admin-stats" id="adminStats"></div>
-            <div class="admin-tabs"><button class="active" data-admin-section="pending">Onay Bekleyen</button><button data-admin-section="all">Tüm İlanlar</button><button data-admin-section="users">Üyeler</button><button data-admin-section="reports">Şikayetler</button><button data-admin-section="status">Sistem Durumu</button><button data-admin-section="audit">Yönetici Kayıtları</button><button data-admin-section="stats">İstatistikler</button></div>
-            <div id="adminContent" class="manage-list"></div>
-          </section>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <button id="floatingAddBtn" class="floating-add">+ Yeni Portföy</button>
-
-  <nav class="bottom-nav">
-    <button data-nav="clients"><span>♟</span>Müşterilerim</button>
-    <button data-nav="account" data-account-jump="listings"><span>▣</span>Portföyüm</button>
-    <button class="nav-focus" data-nav="tasks"><span class="nav-add">▥</span>Pano</button>
-    <button data-nav="evaluation"><span>▦</span>Değerlendirme</button>
-    <button class="active" data-nav="home"><span>⌂</span>Ana Sayfa</button>
+<header class="site-header">
+  <a class="brand" href="#anasayfa" aria-label="Güvenli Yaşam ana sayfa">
+    <span class="brand-mark">GY</span><span>GÜVENLİ YAŞAM<small>Konut Altı Sığınak Rehberi</small></span>
+  </a>
+  <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mainNav">Menü ☰</button>
+  <nav id="mainNav">
+    <a href="#proje">Proje nedir?</a><a href="#sistemler">Sistemler</a><a href="#malzemeler">Malzemeler</a>
+    <a href="#surec">Uygulama süreci</a><a href="#hazirlik">Acil durum hazırlığı</a><a class="nav-cta" href="#iletisim">Proje görüşmesi</a>
   </nav>
+</header>
 
-  <dialog id="listingDialog" class="modal listing-modal"><button class="modal-close" data-close>×</button><div id="listingDetail"></div></dialog>
-  <dialog id="authDialog" class="modal auth-modal"><button class="modal-close" data-close>×</button><div class="auth-brand"><h2>Uzman Emlak</h2><p>Üyelik oluşturun veya hesabınıza giriş yapın.</p></div><div class="auth-tabs"><button class="active" data-auth-tab="login">Giriş Yap</button><button data-auth-tab="signup">Üye Ol</button></div><form id="loginForm" class="auth-form"><label>E-posta<input id="loginEmail" type="email" required /></label><label>Şifre<input id="loginPassword" type="password" minlength="6" required /></label><button class="gold-btn">Giriş Yap</button><button id="forgotPasswordBtn" class="text-btn" type="button">Şifremi Unuttum</button></form><form id="signupForm" class="auth-form hidden"><label>Ad Soyad<input id="signupName" required /></label><label>E-posta<input id="signupEmail" type="email" required /></label><label>Şifre<input id="signupPassword" type="password" minlength="6" required /></label><label>Telefon<input id="signupPhone" inputmode="tel" /></label><button class="gold-btn">Üye Ol</button><small>Üyeliğiniz oluşturulduğunda otomatik giriş yapılır.</small></form></dialog>
-  <dialog id="resetPasswordDialog" class="modal auth-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><h2>Yeni Şifre Belirle</h2><p>Yeni şifrenizi iki kez girin.</p></div><form id="resetPasswordForm" class="auth-form"><label>Yeni Şifre<input id="newPassword" type="password" minlength="6" required></label><label>Yeni Şifre Tekrar<input id="newPassword2" type="password" minlength="6" required></label><button class="gold-btn">Şifreyi Güncelle</button></form></dialog>
+<main>
+<section class="hero" id="anasayfa">
+  <div class="hero-content">
+    <p class="eyebrow">BİLGİLENDİRME • PLANLAMA • GÜVENLİK</p>
+    <h1>Evinizin altında,<br><em>güvenliğe ayrılmış</em><br>bir alan fikri.</h1>
+    <p class="hero-lead">Konut altı savaş sığınağı yaklaşımını; ne amaçla tasarlandığını, hangi sistemlere ihtiyaç duyduğunu ve güvenli bir projelendirme sürecinin nasıl ilerlediğini keşfedin.</p>
+    <div class="hero-actions"><a class="button primary" href="#proje">Projeyi keşfet</a><a class="button ghost" href="#surec">Süreç nasıl ilerler?</a></div>
+    <p class="hero-note">Her yapı farklıdır. Sığınak tasarımı, mevcut binanın incelenmesi ve yetkili uzmanların hazırladığı projelerle değerlendirilmelidir.</p>
+  </div>
+  <div class="hero-art" aria-label="Yer altında korunaklı alanı temsil eden şematik çizim">
+    <div class="earth earth-one"></div><div class="earth earth-two"></div>
+    <div class="house"><div class="roof"></div><div class="house-body"><span class="window"></span><span class="window"></span><span class="door"></span></div></div>
+    <div class="underground"><div class="shelter-label">KORUNAKLI ALAN</div><div class="room"><span></span><span></span><span></span><i></i></div><div class="pipe"></div><div class="airflow">HAVA DOLAŞIMI</div></div>
+    <div class="art-caption">Temsili konsept çizimi • Uygulama projesi değildir</div>
+  </div>
+</section>
 
-  <dialog id="listingFormDialog" class="modal form-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">PORTFÖY</div><h2 id="listingFormTitle">Yeni İlan Ver</h2><p>Bilgileri eksiksiz girin. Yeni ilanlar yönetici onayına gönderilir.</p></div><form id="listingForm" class="form-grid listing-form"><input id="editListingId" type="hidden" />
-    <label class="full">İlan Başlığı<input id="lfTitle" maxlength="120" required placeholder="Örn. Önerler'de Yatırımlık Ticari Arsa" /></label>
-    <label>İşlem<select id="lfDeal" required><option value="sale">Satılık</option><option value="rent">Kiralık</option><option value="land_share">Kat Karşılığı</option><option value="exchange">Takas</option></select></label>
-    <label>Kategori<select id="lfCategory" required><option value="Konut">Konut</option><option value="Arsa">Arsa</option><option value="İşyeri">İşyeri</option></select></label>
-    <label>Alt Kategori<input id="lfSubcategory" placeholder="Daire, Ticari Arsa, Dükkan..." /></label>
-    <label>Fiyat (TL)<input id="lfPrice" type="number" min="0" step="1" /></label>
-    <label>İl<input id="lfCity" placeholder="Örn. İstanbul" required /></label><label>İlçe<input id="lfDistrict" placeholder="Örn. Kadıköy" required /></label><label>Mahalle<input id="lfNeighborhood" required /></label><label>Adres / Cadde<input id="lfAddress" /></label>
-    <label>Brüt m²<input id="lfGross" type="number" step="0.01" min="0" /></label><label>Net m²<input id="lfNet" type="number" step="0.01" min="0" /></label>
-    <div id="residentialFields" class="subform full"><label>Oda Sayısı<input id="lfRooms" placeholder="3+1" /></label><label>Kat<input id="lfFloor" /></label><label>Bina Yaşı<input id="lfBuildingAge" /></label><label>Isıtma<input id="lfHeating" placeholder="Kombi" /></label><label>Banyo<input id="lfBathroom" type="number" min="0" /></label><label>Toplam Kat<input id="lfTotalFloors" /></label></div>
-    <div id="landFields" class="subform full hidden"><label>Ada<input id="lfAda" /></label><label>Parsel<input id="lfParsel" /></label><label>İmar<input id="lfZoning" /></label><label>Emsal<input id="lfEmsal" /></label><label>Hmax<input id="lfHmax" /></label><label>Cephe<input id="lfFrontage" /></label></div>
-    <div class="check-grid full"><label><input id="lfBalcony" type="checkbox" /> Balkon</label><label><input id="lfElevator" type="checkbox" /> Asansör</label><label><input id="lfParking" type="checkbox" /> Otopark</label><label><input id="lfFurnished" type="checkbox" /> Eşyalı</label><label><input id="lfCredit" type="checkbox" /> Krediye Uygun</label></div>
-    <label class="full">Açıklama<textarea id="lfDescription" rows="7" required placeholder="Gayrimenkulün tüm detaylarını yazın..."></textarea></label>
-    <label>İletişim Adı<input id="lfContactName" /></label><label>İletişim Telefonu<input id="lfContactPhone" inputmode="tel" /></label>
-    <label class="full file-label">Fotoğraflar<input id="lfImages" type="file" accept="image/jpeg,image/png,image/webp" multiple /><small>En fazla 12 fotoğraf, dosya başına 10 MB.</small></label>
-    <div id="uploadPreview" class="upload-preview full"></div>
-    <div class="full form-actions"><button type="button" id="saveDraftBtn" class="ghost-btn">Taslak Kaydet</button><button class="gold-btn">Onaya Gönder</button></div>
-  </form></dialog>
+<section class="trust-strip">
+  <div><strong>Önce mühendislik</strong><span>Taşıyıcı sistem ve zemin incelemesi</span></div>
+  <div><strong>Yaşam destek sistemleri</strong><span>Havalandırma, su, enerji ve iletişim</span></div>
+  <div><strong>Mevzuata uygunluk</strong><span>İzin, standart ve denetim kontrolü</span></div>
+</section>
 
-  <dialog id="filterDialog" class="modal filter-modal"><button class="modal-close" data-close>×</button><div class="modal-title"><div class="eyebrow">DETAYLI ARAMA</div><h2>Filtreler</h2></div><div class="form-grid"><label>Min. Fiyat<input id="fMinPrice" type="number" min="0" /></label><label>Maks. Fiyat<input id="fMaxPrice" type="number" min="0" /></label><label>Min. m²<input id="fMinM2" type="number" min="0" /></label><label>Maks. m²<input id="fMaxM2" type="number" min="0" /></label><label>Oda Sayısı<input id="fRooms" placeholder="3+1" /></label><label>Isıtma<input id="fHeating" placeholder="Kombi" /></label><label>Ada<input id="fAda" /></label><label>Parsel<input id="fParsel" /></label><div class="full form-actions"><button id="applyAdvancedFilter" class="gold-btn">Filtrele</button></div></div></dialog>
+<section class="section intro" id="proje">
+  <div class="section-heading"><p class="eyebrow">01 / KAVRAM</p><h2>Savaş sığınağı projesi nedir?</h2></div>
+  <div class="intro-copy">
+    <p class="lead">Savaş sığınağı; belirli acil durumlarda insanları dış etkilerden korumak amacıyla tasarlanan, kontrollü erişime ve planlanmış yaşam destek sistemlerine sahip korunaklı bir alandır.</p>
+    <p>Konut altında düşünülen bir sığınak, yalnızca yerin altına oda yapmak değildir. Binanın temelleri, zemin ve yeraltı suyu koşulları, yangın güvenliği, hava kalitesi, tahliye imkânı ve kullanılacak kapasite birlikte değerlendirilmelidir. Koruma seviyesi; tehdit türüne, konuma, tasarıma, malzemelere ve uygulama kalitesine bağlıdır. Hiçbir alan her türlü tehdide karşı mutlak koruma sağlayacağı iddiasıyla tanıtılmamalıdır.</p>
+    <div class="notice"><strong>Önemli:</strong> Mevcut bir evin altını kazmak veya temele müdahale etmek göçme ve ciddi yaralanma riski doğurabilir. Bu sayfa uygulama çizimi ya da inşaat talimatı değildir. İnşaat öncesinde yetkili inşaat/jeoteknik mühendisleri, mimar ve ilgili idarelerle görüşülmelidir.</div>
+  </div>
+</section>
 
-  <script type="module" src="app.js?v=54"></script>
+<section class="section dark-section" id="amac">
+  <div class="section-heading"><p class="eyebrow">02 / AMAÇ VE SINIRLAR</p><h2>Ne işe yarar, neyi garanti etmez?</h2><p class="section-sub">İyi bir proje, hedeflenen riskleri ve sınırlarını en başta açıklar.</p></div>
+  <div class="feature-grid">
+    <article class="feature-card"><span class="feature-icon">01</span><h3>Geçici korunma</h3><p>Yetkili uzmanların belirlediği senaryolarda, kullanıcıların belirli süreyle daha korunaklı bir alanda bulunmasına yardımcı olmayı hedefler.</p></article>
+    <article class="feature-card"><span class="feature-icon">02</span><h3>Düzenli hazırlık</h3><p>Su, ilk yardım, aydınlatma, iletişim ve temel ihtiyaçların önceden planlanmasını sağlar.</p></article>
+    <article class="feature-card"><span class="feature-icon">03</span><h3>Kontrollü erişim</h3><p>Giriş, çıkış, yönlendirme ve içerideki hareket alanı acil durumda panik ve tıkanma riskini azaltacak şekilde ele alınır.</p></article>
+    <article class="feature-card"><span class="feature-icon">04</span><h3>Tek başına yeterli değildir</h3><p>Sığınak; resmî uyarıları izleme, tahliye talimatlarına uyma ve acil hizmetlerle iletişim kurmanın yerine geçmez.</p></article>
+  </div>
+</section>
 
-<dialog id="crmClientDialog"><form method="dialog" class="dialog-head"><b>Yeni Müşteri</b><button>✕</button></form><form id="crmClientForm" class="crm-form dialog-body"><label>Ad Soyad<input id="ccName" required></label><label>Telefon<input id="ccPhone" inputmode="tel"></label><label>Tip<select id="ccType"><option value="Alıcı">Alıcı</option><option value="Satıcı">Satıcı</option><option value="Kiracı">Kiracı</option><option value="Mülk Sahibi">Mülk Sahibi</option></select></label><label>Durum<select id="ccStatus"><option>Yeni</option><option>Sıcak</option><option>Takipte</option><option>Teklif Verdi</option><option>Sonuçlandı</option></select></label><label>Bütçe Min<input id="ccMin" type="number"></label><label>Bütçe Max<input id="ccMax" type="number"></label><label>Gayrimenkul<select id="ccProperty"><option>Konut</option><option>Arsa</option><option>İşyeri</option></select></label><label>Bölge<input id="ccArea" placeholder="Çorlu, Önerler..."></label><label>Sonraki Takip<input id="ccFollow" type="datetime-local"></label><label>Oda / Özellik<input id="ccRooms" placeholder="3+1, köşe, krediye uygun..."></label><label class="full">Notlar<textarea id="ccNotes" rows="3"></textarea></label><button class="gold-btn full">Müşteriyi Kaydet</button></form></dialog>
-<dialog id="crmTaskDialog"><form method="dialog" class="dialog-head"><b>Yeni Takip</b><button>✕</button></form><form id="crmTaskForm" class="crm-form dialog-body"><label class="full">Görev<input id="ctTitle" required placeholder="Ahmet Bey'i ara"></label><label>Müşteri<select id="ctClient"></select></label><label>Tarih<input id="ctDate" type="datetime-local"></label><label>Öncelik<select id="ctPriority"><option>Normal</option><option>Yüksek</option><option>Acil</option></select></label><label class="full">Not<textarea id="ctNotes"></textarea></label><button class="gold-btn full">Takibi Kaydet</button></form></dialog>
-<dialog id="crmPipelineDialog"><form method="dialog" class="dialog-head"><b>Satış Hunisi</b><button>✕</button></form><div class="dialog-body"><div id="crmPipeline" class="crm-pipeline"></div></div></dialog>
-<dialog id="crmCommissionDialog"><form method="dialog" class="dialog-head"><b>Komisyon Hesapla</b><button>✕</button></form><form id="crmCommissionForm" class="crm-form dialog-body"><label>İşlem Bedeli<input id="cmPrice" type="number" min="0" required></label><label>Komisyon %<input id="cmRate" type="number" min="0" step="0.1" value="2" required></label><label>KDV %<input id="cmVat" type="number" min="0" step="1" value="20"></label><div class="full crm-summary-box"><small>Tahmini toplam</small><b id="cmResult">0 TL</b></div><button class="gold-btn full">Hesapla</button></form></dialog>
-<dialog id="crmImportDialog"><form method="dialog" class="dialog-head"><b>Portföy İçe Aktar</b><button>✕</button></form><div class="dialog-body"><p class="location">Sahibinden/Ofisim tarafından dışa aktarılan CSV dosyasını seçin. Dosya yapısı destekleniyorsa önizleme hazırlanır; mevcut ilanlar otomatik silinmez.</p><div class="import-box"><input id="crmImportFile" type="file" accept=".csv,text/csv"><div id="crmImportInfo" class="hint"></div></div></div></dialog>
+<section class="section" id="sistemler">
+  <div class="section-heading"><p class="eyebrow">03 / TEMEL SİSTEMLER</p><h2>Bir sığınakta hangi sistemler düşünülür?</h2><p class="section-sub">İhtiyaçlar, kullanım kapasitesi ve geçerli mevzuat doğrultusunda uzman proje ekibi tarafından belirlenir.</p></div>
+  <div class="system-list">
+    <article class="system-row"><div class="system-number">01</div><div><h3>Taşıyıcı yapı ve zemin güvenliği</h3><p>Zemin etüdü, yeraltı suyu, mevcut temel ve kolon-kiriş düzeni incelenir. Betonarme, donatı ve bağlantı kararları hesap ve projeye göre verilir; hazır bir ölçü her binaya uygulanamaz.</p><ul><li>Mevcut yapının statik durumunun incelenmesi</li><li>Kazı ve komşu yapı risklerinin değerlendirilmesi</li><li>Uygulama boyunca mühendislik denetimi</li></ul></div></article>
+    <article class="system-row"><div class="system-number">02</div><div><h3>Su yalıtımı ve drenaj</h3><p>Toprak nemi ve su basıncı, yeraltı alanlarında önemli risklerdir. Su yalıtım sistemi, drenaj ve tahliye çözümü zemine göre tasarlanır. Sızıntı; elektrik, hijyen ve yapı dayanımı açısından tehlike yaratabilir.</p><ul><li>Yeraltı suyu ve yağış koşullarının değerlendirilmesi</li><li>Uygun yalıtım detayları ve kontrollü drenaj</li><li>Bakım ve sızıntı kontrol planı</li></ul></div></article>
+    <article class="system-row"><div class="system-number">03</div><div><h3>Havalandırma ve hava kalitesi</h3><p>Kapalı alanda temiz hava sağlanması, karbondioksit ve nemin kontrolü temel gerekliliktir. Mekanik havalandırma kapasitesi, filtre türü ve olası yedekleme gereksinimi uzmanlarca belirlenir. Sıradan bir fan, tehlikeli gazlara veya tüm kimyasal/biyolojik tehditlere karşı koruma anlamına gelmez.</p><ul><li>Kapasiteye göre tasarlanmış mekanik hava değişimi</li><li>Uygun filtreleme, izleme ve bakım</li><li>Enerji kesintisi senaryosu ve güvenli hava giriş/çıkışı</li></ul></div></article>
+    <article class="system-row"><div class="system-number">04</div><div><h3>Giriş, çıkış ve tahliye</h3><p>Giriş düzeni, kapı, merdiven/rampa, acil aydınlatma ve çıkış yönlendirmesi birlikte değerlendirilir. Tek bir girişin enkaz, yangın veya arıza nedeniyle kullanılamaması ihtimali proje aşamasında ele alınmalıdır.</p><ul><li>Engelsiz ve güvenli erişim değerlendirmesi</li><li>Mevzuatın gerektirdiği kaçış düzeni</li><li>Kapıların, yolların ve işaretlerin periyodik kontrolü</li></ul></article>
+    <article class="system-row"><div class="system-number">05</div><div><h3>Elektrik ve yedek enerji</h3><p>Aydınlatma, havalandırma, haberleşme ve temel ekipmanların enerji gereksinimleri hesaplanır. Akü veya jeneratör gibi seçeneklerin güvenli kurulumu; yangın, egzoz ve elektrik riskleri dikkate alınarak uzmanlarca planlanır.</p><ul><li>Acil aydınlatma ve güvenli elektrik tesisatı</li><li>Yedek güç ihtiyacı ve çalışma süresi hesabı</li><li>Elektrik kesintisinde kullanılacak prosedür</li></ul></div></article>
+    <article class="system-row"><div class="system-number">06</div><div><h3>Su, hijyen ve atık yönetimi</h3><p>İçme suyu depolama, el hijyeni, tuvalet ve atık yönetimi kapasiteye ve beklenen kalış süresine göre düşünülür. Atık suyun geri basması, kirlenme ve taşma riskleri ayrıca değerlendirilir.</p><ul><li>Güvenli içme suyu ve uygun saklama</li><li>Hijyen malzemeleri ve sanitasyon çözümü</li><li>Atık su ve sızıntı risklerinin yönetimi</li></ul></div></article>
+    <article class="system-row"><div class="system-number">07</div><div><h3>Yangın güvenliği ve haberleşme</h3><p>Yangına uygun malzemeler, algılama, söndürme ekipmanı, duman yönetimi ve tahliye birlikte planlanır. Telefonun çekmemesi ihtimaline karşı erişilebilir iletişim seçenekleri ve resmî haber kaynakları belirlenir.</p><ul><li>Uygun yangın algılama ve söndürme önlemleri</li><li>Radyo, telefon ve acil durum iletişim planı</li><li>İlk yardım ve kullanıcı bilgilendirmesi</li></ul></div></article>
+  </div>
+</section>
+
+<section class="section materials" id="malzemeler">
+  <div class="section-heading"><p class="eyebrow">04 / MALZEME GRUPLARI</p><h2>Hangi malzemeler kullanılır?</h2><p class="section-sub">Aşağıdaki liste, olası malzeme gruplarını tanıtır. Kesin ürün, sınıf, kalınlık ve miktarlar proje hesaplarıyla belirlenir.</p></div>
+  <div class="materials-grid">
+    <article><div class="material-symbol">▦</div><h3>Yapısal malzemeler</h3><p>Projeye uygun beton, betonarme donatısı, kalıp ve onaylı bağlantı elemanları. Sınıf ve miktarlar mühendislik hesabına göre seçilir.</p></article>
+    <article><div class="material-symbol">◈</div><h3>Su yalıtımı</h3><p>Uygun membran veya sürme esaslı yalıtım, koruma katmanları, derz ve geçiş detayları ile gerekli drenaj bileşenleri.</p></article>
+    <article><div class="material-symbol">⌁</div><h3>Havalandırma</h3><p>Projeye uygun fan ve kanal sistemi, filtre gövdesi, hava menfezleri, izleme elemanları ve bakım için erişilebilir bileşenler.</p></article>
+    <article><div class="material-symbol">⏻</div><h3>Elektrik ve aydınlatma</h3><p>Uygun kablo ve koruma elemanları, acil aydınlatma, batarya/akü sistemi ve gerekli yedek enerji ekipmanları.</p></article>
+    <article><div class="material-symbol">▤</div><h3>Kapı ve erişim elemanları</h3><p>Projede belirtilen özellikte kapı, kasa, kilit, merdiven veya rampa ve güvenli yönlendirme işaretleri. Özel koruma özellikleri belgelendirilmelidir.</p></article>
+    <article><div class="material-symbol">＋</div><h3>İç donanım ve sarf malzemeleri</h3><p>Oturma/yatma düzeni, su kapları, ilk yardım dolabı, yangın ekipmanı, hijyen malzemeleri, radyo ve dayanıklı saklama kapları.</p></article>
+  </div>
+  <div class="notice"><strong>Malzeme seçimi notu:</strong> “Kalın beton”, ağır kapı veya belirli bir filtre tek başına sığınağı güvenli yapmaz. Performans; tasarım, zemin, birleşimler, uygulama kalitesi, test ve bakımın bir bütünüdür.</div>
+</section>
+
+<section class="section process-section" id="surec">
+  <div class="section-heading"><p class="eyebrow">05 / NASIL İLERLER?</p><h2>Fikirden güvenli projeye adım adım</h2><p class="section-sub">Güvenli yaklaşım, doğrudan kazıya başlamak değil; önce uygulanabilirliği doğrulamaktır.</p></div>
+  <div class="timeline">
+    <article><span>1</span><div><h3>İhtiyacın tanımlanması</h3><p>Kimlerin kullanacağı, amaçlanan koruma senaryoları, tahmini kalış süresi ve erişilebilirlik ihtiyaçları belirlenir.</p></div></article>
+    <article><span>2</span><div><h3>Arsa ve bina incelemesi</h3><p>Mevcut bina projeleri, temel sistemi, zemin koşulları, yeraltı suyu ve komşu yapılar değerlendirilir.</p></div></article>
+    <article><span>3</span><div><h3>Uzman ekip ve ön fizibilite</h3><p>Mimar, inşaat mühendisi ve gerekli jeoteknik/tesisat uzmanları uygulanabilirliği ve riskleri inceler.</p></div></article>
+    <article><span>4</span><div><h3>Mevzuat ve izin kontrolü</h3><p>Belediye ve ilgili kurumlarla ruhsat, imar, sığınak mevzuatı, yangın ve diğer yasal yükümlülükler doğrulanır.</p></div></article>
+    <article><span>5</span><div><h3>Projelendirme ve sistem seçimi</h3><p>Statik, mimari, mekanik, elektrik, su yalıtımı, yangın ve tahliye çözümleri birbirleriyle uyumlu hazırlanır.</p></div></article>
+    <article><span>6</span><div><h3>Onaylı uygulama ve denetim</h3><p>İş, onaylı proje ve güvenli şantiye planına göre yetkin ekiplerce yürütülür. Kontrol ve kayıtlar tutulur.</p></div></article>
+    <article><span>7</span><div><h3>Test, teslim ve bakım</h3><p>Sistemler test edilir, kullanıcıya işletme talimatları verilir; filtre, enerji, su, yangın ve çıkış kontrolleri için bakım takvimi hazırlanır.</p></div></article>
+  </div>
+</section>
+
+<section class="section split-section" id="kullanim">
+  <div class="split-copy"><p class="eyebrow">06 / KULLANIM VE YAŞAM</p><h2>İçeride ne bulunmalı?</h2><p>Sığınağın iç düzeni, kapasitesi ve kullanım süresine göre planlanır. Alanı gereksiz eşyayla doldurmak erişimi, havalandırmayı ve tahliyeyi engelleyebilir.</p>
+    <ul class="check-list"><li>İçme suyu ve uygun saklama koşulları</li><li>Uzun ömürlü, kişilerin ihtiyaçlarına uygun yiyecekler</li><li>İlk yardım malzemeleri ve düzenli kullanılan ilaçlar</li><li>El feneri, yedek pil ve batarya destekli aydınlatma</li><li>Pille çalışan radyo ve şarj edilmiş iletişim cihazları</li><li>Hijyen ve sanitasyon malzemeleri</li><li>Mevsime uygun giysi, battaniye ve temel kişisel ihtiyaçlar</li><li>Yangın söndürücü ve kullanım talimatları</li><li>Çocuklar, yaşlılar, engelliler ve evcil hayvanlar için özel ihtiyaç planı</li></ul>
+  </div>
+  <div class="info-panel"><div class="panel-icon">✓</div><h3>Hazırlık sadece ekipman değildir</h3><p>Hane halkı; toplanma noktası, aile iletişim kişisi, resmî uyarıları takip etme yöntemi ve ne zaman tahliye edileceği konusunda önceden anlaşmalıdır.</p><a href="#hazirlik" class="text-link">Acil durum kontrol listesi →</a></div>
+</section>
+
+<section class="section dark-section" id="riskler">
+  <div class="section-heading"><p class="eyebrow">07 / RİSKLER</p><h2>Göz ardı edilmemesi gereken konular</h2></div>
+  <div class="risk-grid">
+    <article><h3>Yapısal hasar</h3><p>Temel çevresinde izinsiz kazı, binanın oturmasına veya göçmesine neden olabilir. Uzman incelemesi olmadan işe başlanmamalıdır.</p></article>
+    <article><h3>Su baskını</h3><p>Yeraltı suyu ve yoğun yağış, sığınağı kullanılamaz hâle getirebilir. Yalıtım ve drenaj profesyonel tasarlanmalıdır.</p></article>
+    <article><h3>Hava kalitesinin bozulması</h3><p>Yetersiz hava değişimi, karbondioksit birikimi ve nem tehlikelidir. Havalandırma sistemleri bakımlı ve çalışır olmalıdır.</p></article>
+    <article><h3>Yangın ve duman</h3><p>Kapalı alanlarda duman ve elektrik arızası ciddi risk oluşturur. Kaçış ve yangın önlemleri birlikte ele alınmalıdır.</p></article>
+    <article><h3>Çıkışın kapanması</h3><p>Enkaz, arıza veya su nedeniyle giriş kapanabilir. Acil çıkış düzeni ve dışarıyla iletişim seçenekleri proje aşamasında değerlendirilmelidir.</p></article>
+    <article><h3>Yanlış güven hissi</h3><p>Hiçbir tasarım her türlü patlama, yangın, kimyasal tehlike veya yapısal çökme için otomatik garanti vermez. Tehdit ve koruma seviyesi açıkça tanımlanmalıdır.</p></article>
+  </div>
+</section>
+
+<section class="section" id="hazirlik">
+  <div class="section-heading"><p class="eyebrow">08 / ACİL DURUM HAZIRLIĞI</p><h2>Ev halkı için kontrol listesi</h2><p class="section-sub">Bu listeyi işaretleyerek temel hazırlık durumunuzu gözden geçirin.</p></div>
+  <div class="checklist-box">
+    <label><input type="checkbox"> Resmî acil durum uyarılarını nereden takip edeceğimizi biliyoruz.</label>
+    <label><input type="checkbox"> Aile iletişim kişisi ve buluşma noktası belirledik.</label>
+    <label><input type="checkbox"> Su, yiyecek ve kişisel ihtiyaçlarımızı kontrol ediyoruz.</label>
+    <label><input type="checkbox"> İlk yardım malzemeleri ve gerekli ilaçlar güncel.</label>
+    <label><input type="checkbox"> El feneri, pil, radyo ve telefon güç kaynakları hazır.</label>
+    <label><input type="checkbox"> Yangın ekipmanları ve çıkış yolları kontrol edildi.</label>
+    <label><input type="checkbox"> Çocuk, yaşlı, engelli ve evcil hayvan ihtiyaçlarını planladık.</label>
+    <label><input type="checkbox"> Sığınağın varsa bakım ve sistem test takvimini biliyoruz.</label>
+    <p class="checklist-foot">Bu kontrol listesi tarayıcınızda kalıcı olarak kaydedilmez. Acil durumda yetkili kurumların talimatlarını izleyin.</p>
+  </div>
+</section>
+
+<section class="section faq-section" id="sss">
+  <div class="section-heading"><p class="eyebrow">09 / SIK SORULAN SORULAR</p><h2>Merak edilenler</h2></div>
+  <details><summary>Her evin altına sığınak yapılabilir mi?</summary><p>Hayır. Zemin, yeraltı suyu, temel sistemi, parsel koşulları ve mevzuat uygunluğu değişir. Bazı yapılarda uygulama mümkün olmayabilir veya orantısız risk doğurabilir.</p></details>
+  <details><summary>Mevcut evin altına sonradan yapılabilir mi?</summary><p>Ancak uzman incelemesi ve gerekli izinler sonrasında değerlendirilebilir. Temel çevresinde gelişigüzel kazı yapılmamalı; mevcut binanın taşıyıcı sistemine müdahale edilmemelidir.</p></details>
+  <details><summary>Hangi malzeme en güvenlisidir?</summary><p>Tek bir “en güvenli malzeme” yoktur. Yapısal elemanlar, yalıtım, kapılar, havalandırma, yangın güvenliği ve uygulama ayrıntıları bir sistem olarak tasarlanır.</p></details>
+  <details><summary>Havalandırma ve filtreler her tehdide karşı korur mu?</summary><p>Hayır. Koruma, tasarlanmış sistemin özelliklerine, uygun filtreye, sızdırmazlık ve bakım koşullarına bağlıdır. Genel amaçlı filtreler tüm kimyasal, biyolojik veya radyolojik tehditleri etkisizleştirme garantisi vermez.</p></details>
+  <details><summary>Ne kadar süre içeride kalınabilir?</summary><p>Bu; tasarım kapasitesi, hava, su, hijyen, enerji, stoklar ve resmî yönlendirmelere bağlıdır. Süre, uzman proje ve işletme planı olmadan varsayılmamalıdır.</p></details>
+  <details><summary>Proje için ilk yapılması gereken nedir?</summary><p>Mevcut bina ve parsel bilgilerini toplayıp yetkin bir mimar ve inşaat/jeoteknik mühendisinden ön değerlendirme istemek; aynı zamanda ilgili belediye ve kurumlarla mevzuat şartlarını doğrulamaktır.</p></details>
+</section>
+
+<section class="contact-section" id="iletisim">
+  <div><p class="eyebrow">10 / İLETİŞİM VE İŞ BİRLİĞİ</p><h2>Fikrinizi güvenli bir projeye dönüştürmek için ilk adımı atın.</h2><p>Ön değerlendirme, uzman görüşü veya iş birliği hakkında iletişime geçin. Bu alanı yayına almadan önce işletme adı, e-posta ve telefon bilgilerinizle güncelleyin.</p></div>
+  <div class="contact-card"><h3>Proje ön görüşmesi</h3><p>İletişim bilgilerinizi ekleyerek bu alanı gerçek başvuru kanalınıza bağlayabilirsiniz.</p><a class="button primary" href="mailto:info@example.com?subject=S%C4%B1%C4%9F%C4%B1nak%20Projesi%20%C3%96n%20G%C3%B6r%C3%BC%C5%9Fmesi">E-posta gönder</a><small>Yayından önce info@example.com adresini kendi adresinizle değiştirin.</small></div>
+</section>
+</main>
+
+<footer>
+  <a class="brand footer-brand" href="#anasayfa"><span class="brand-mark">GY</span><span>GÜVENLİ YAŞAM<small>Konut Altı Sığınak Rehberi</small></span></a>
+  <p>Bilgilendirme amaçlıdır; mühendislik projesi, ruhsat veya güvenlik garantisi değildir.</p>
+  <div class="footer-links"><a href="#proje">Proje</a><a href="#malzemeler">Malzemeler</a><a href="#surec">Süreç</a><a href="#sss">SSS</a></div>
+  <p class="copyright">© <span id="year"></span> Güvenli Yaşam • Tüm hakları saklıdır.</p>
+</footer>
+<script src="script.js"></script>
 </body>
 </html>
